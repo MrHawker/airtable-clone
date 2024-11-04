@@ -2,11 +2,12 @@
 
 export function RightHat() {
   return (
-    <div className="flex-col pt-3 ml-2">
+    <div className="pt-[6px] ml-2">
         <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="10"
+        viewBox="0 0 16 16"
+        width="8"
+        height="14"
         fill="none"
         data-icon="chevronDown"
         style={{ transform: "rotate(-90deg)" }}
