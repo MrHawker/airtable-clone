@@ -5,7 +5,7 @@ import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { AirtableFooter } from "./companies_banner";
 import { Session } from "next-auth";
-
+import { signIn } from "next-auth/react";
 export function Landing({session}:{session:Session|null}) {
   
   const [menuExtended,setMenuExtended] = useState(false);  
@@ -70,7 +70,7 @@ export function Landing({session}:{session:Session|null}) {
                 <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Enterprise</span></button>
                 <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Pricing</span></button>
                 <button className=" mt-[10px] px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Contact Sales</span></button>
-                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Sign In</span></button>
+                <button onClick={()=>signIn('google')} className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Sign In</span></button>
             </nav>
             
         </main>
