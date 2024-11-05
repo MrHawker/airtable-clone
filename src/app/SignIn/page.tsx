@@ -9,7 +9,7 @@ export default function Page(){
     if (session) {
         redirect("/");
     }
-    
+
     return (
         <div
         style={{
