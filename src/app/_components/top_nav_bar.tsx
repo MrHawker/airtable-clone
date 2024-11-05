@@ -5,7 +5,7 @@ import { useState,useEffect } from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { RxCross1 } from "react-icons/rx";
 
-export function Top_Nav_Bar({menuExtended,setMenuExtended}:{menuExtended:boolean,setMenuExtended:Function}) {
+export function Top_Nav_Bar({menuExtended,setMenuExtended}:{menuExtended:boolean,setMenuExtended:React.Dispatch<React.SetStateAction<boolean>>}) {
   const [isDesktop,setIsDesktop] = useState(false);
   
   useEffect(() => {
