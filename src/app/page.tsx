@@ -1,66 +1,76 @@
-import Link from "next/link";
+'use client';
 
-import { LatestPost } from "~/app/_components/post";
-import { auth } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-
-export default async function Home() {
-
-  return (
-    <HydrateClient>
-      <main>
+import { Top_Nav_Bar } from "~/app/_components/top_nav_bar";
+import { useState } from "react";
+import { MdArrowForwardIos } from "react-icons/md";
+import { AirtableFooter } from "./_components/companies_banner";
+export default function Home() {
+  const [menuExtended,setMenuExtended] = useState(false);  
+  if (!menuExtended) return (
+    <main>
+        <Top_Nav_Bar menuExtended={menuExtended} setMenuExtended={setMenuExtended}/>
         <div
         style={{
             backgroundImage: "url('/Landing_Page/Gradient_BackGround.jpeg')",
             backgroundSize: "cover",
-            height: "100vh",
             width: "100%",
         }}
-        className="flex"
+        className="flex flex-col xl:flex-row"
         >
-        <div className="flex flex-col justify-center font-semibold pl-16 mr-20 text-header-color mt-52">
-            <span className="text-5xl">
+        <div className="flex flex-col pt-10 xl:pt-56 px-6 xl:pl-12 xl:pr-0 xl:mr-10 text-header-color  mb-4">
+            <h1 className="text-4xl xl:text-5xl font-bold ">
                 Digital operations for the AI era
-            </span>
-            <span className="text-lg mt-4">
+            </h1>
+            <span className=" text-md xl:text-lg mt-4 font-semibold">
                 Create modern business apps to manage and automate critical processes.
             </span>
-            <div className="pt-6 space-x-4">
+            <div className="pt-6  xl:space-x-4 flex flex-col xl:flex-row">
                 <button className="border border-slate-300  py-2 shadow-md hover:bg-sign-up-button-blue-focus 
-                    transition ease-in-out duration-300 rounded-xl text-white bg-sign-up-button-blue">
-                    <span className="text-md mx-[36px] 
+                    transition ease-in-out duration-300 rounded-xl text-white bg-sign-up-button-blue mb-3 xl:mb-0">
+                    <span className="text-md mx-[36px]  
                     font-semibold">
                         Sign up for free
                     </span>
                 </button>
                 <button className="border-[2px] border-slate-200  py-2 shadow-md hover:bg-blue-100
                         transition ease-in-out duration-300 rounded-xl 
-                        hover:text-hover-blue hover:border-blue-500 mr-5
+                        hover:text-hover-blue hover:border-blue-500 
                         bg-stronger-contact-sale-bg">
                         <span className="text-md mx-[36px] 
                         font-semibold">
                             Contact Sales
                         </span>
-                </button>
-                    
+                </button> 
             </div>
         </div>
-        
-        <div
-        style={{
-            backgroundImage: "url('/Landing_Page/Web_Preview.png')",
-            backgroundSize: "contain",
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: "center",
-            width:"75%",
-            zIndex:3
-        }}
-        className="flex w-full mt-48"
-        ></div>
-        
+        <div className="pt-20 px-12 xl:pl-10 xl:pr-0 mb-4 flex-grow">
+            <img className="shadow-2xl" width={1200} height={600} src="/Landing_Page/Web_Preview.png">
+            </img>
         </div>
-
+        </div>
+        <AirtableFooter/>
       </main>
-    </HydrateClient>
   );
+  else{
+    return (
+        <main>
+            <Top_Nav_Bar menuExtended={menuExtended} setMenuExtended={setMenuExtended}/>
+            <nav className="flex flex-col py-[8px]">
+                <button className=" hover:text-hover-blue transition ease-in-out duration-300  px-[24px] py-[16px] ">
+                    <span className="text-lg font-semibold  flex justify-between">
+                        Platform
+                    <MdArrowForwardIos className="mt-2 text-slate-500 text-xs"/>
+                    </span>
+                </button>
+                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex justify-between">Solutions<MdArrowForwardIos className="mt-2 text-slate-500 text-xs"/></span></button>
+                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex justify-between">Resources<MdArrowForwardIos className="mt-2 text-slate-500 text-xs"/></span></button>
+                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Enterprise</span></button>
+                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Pricing</span></button>
+                <button className=" mt-[10px] px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Contact Sales</span></button>
+                <button className=" px-[24px] py-[16px] hover:text-hover-blue transition ease-in-out duration-300"><span className="text-lg font-semibold  flex">Sign In</span></button>
+            </nav>
+            
+        </main>
+    );
+  }
 }

@@ -18,9 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <Top_Nav_Bar/>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <div className="min-h-screen">
+          
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </div>
       </body>
+      
     </html>
   );
 }
