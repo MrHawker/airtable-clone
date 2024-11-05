@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { RightHat } from "../svg/rightHat";
 import { useState,useEffect } from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { RxCross1 } from "react-icons/rx";
+import { Session } from "next-auth";
 
-export function Top_Nav_Bar({menuExtended,setMenuExtended}:{menuExtended:boolean,setMenuExtended:React.Dispatch<React.SetStateAction<boolean>>}) {
+
+export function Top_Nav_Bar({menuExtended,setMenuExtended,session}:{menuExtended:boolean,setMenuExtended:React.Dispatch<React.SetStateAction<boolean>>,session:Session|null}) {
   const [isDesktop,setIsDesktop] = useState(false);
   
   useEffect(() => {
@@ -24,7 +27,7 @@ export function Top_Nav_Bar({menuExtended,setMenuExtended}:{menuExtended:boolean
         <div className="w-full">
             <div style={{ backgroundColor: '#f0f6ff' }} className="flex flex-col text-sm md:flex-row md:justify-center md:text-sm md:space-x-3 py-[12px] px-[32px]">
                 <span>Introducing Airtable ProductCentral.</span>
-                <span className="text-sign-up-button-blue font-semibold flex mt-2 lg:mt-0">
+                <span className="text-sign-up-button-blue font-semibold flex mt-2 md:mt-0">
                     <span className="mr-2">See it in action</span>
                     <svg className="mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 13" width="16" height="13" fill="none"><path stroke="#254fad" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m10 1.5 5 5-5 5"></path><path stroke="#254fad" strokeLinecap="round" strokeWidth="2" d="M15 6.5H1"></path></svg>
                 </span>
@@ -84,9 +87,13 @@ export function Top_Nav_Bar({menuExtended,setMenuExtended}:{menuExtended:boolean
                         </div>
                         {isDesktop ? <button className=" hover:text-sign-up-button-blue 
                             transition ease-in-out duration-300 ">
-                            <span className="text-md px-3
-                            font-medium">
-                                Sign in
+                            <span className="">
+                                <Link
+                                    href={session ? "/api/auth/signout" : "/api/auth/signin"}
+                                    className="text-md px-3font-medium"
+                                >
+                                    {session ? "Sign out" : "Sign in"}
+                                </Link>
                             </span>
                         </button>:
                         <button onClick={()=>{setMenuExtended(!menuExtended)}} className=" hover:text-sign-up-button-blue 
