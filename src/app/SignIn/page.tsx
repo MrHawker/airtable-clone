@@ -7,7 +7,7 @@ export default function Page(){
     const { data: session } = useSession();
 
     if (session) {
-        redirect("/");
+        redirect("/dashboard");
     }
 
     return (
@@ -48,7 +48,7 @@ export default function Page(){
                             <div style={{ backgroundColor: "rgba(0, 14, 38, 0.23)", width: "100%", height: "1px" }}></div>
                         </div>
                         <div className="p-1 space-y-4">
-                            <button onClick={()=>signIn('google')} className="border-2 py-[5px]  hover:border-2 hover:border-black 
+                            <button onClick={()=>signIn('google',{redirectTo:'/dashboard'})} className="border-2 py-[5px]  hover:border-2 hover:border-black 
                                 rounded-xl w-full flex justify-center hover:bg-slate-100">
                                 <FcGoogle className="mt-1 mr-2" style={{ fontSize: '20px' }}/>
                                 <span className="text-xl px-3 

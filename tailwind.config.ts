@@ -16,6 +16,7 @@ export default {
         'stronger-contact-sale-bg': '#efdddc',
         'icon-color': '#9297a0',
         'slate-signin': '#f2f2f2',
+        'card-brown': '#944d37'
       }
     },
     
