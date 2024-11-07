@@ -9,6 +9,10 @@ import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 export function Landing({session}:{session:Session|null}) {
   
+
+  if(session){
+    redirect('/dashboard')
+  }
   const [menuExtended,setMenuExtended] = useState(false);  
   if (!menuExtended) return (
     <main>
