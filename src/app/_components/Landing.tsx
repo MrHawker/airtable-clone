@@ -6,6 +6,7 @@ import { MdArrowForwardIos } from "react-icons/md";
 import { AirtableFooter } from "./companies_banner";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 export function Landing({session}:{session:Session|null}) {
   
   const [menuExtended,setMenuExtended] = useState(false);  

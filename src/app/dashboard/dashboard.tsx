@@ -18,7 +18,7 @@ export function Dashboard({session}:{session:Session}){
     const [open,setOpen] = useState(false)
     return (
         <main className="relative" onClick={()=>setOpen(false)}>
-            <DashboardHeadNav open={open} setOpen={setOpen} session={session}/>
+            <DashboardHeadNav open={open} setOpen={setOpen} menuExtended={menuExtended} setMenuExtended={setMenuExtended} session={session}/>
             <div className="flex w-full">
                 <DashBoardSideNav menuExtended={menuExtended} setMenuExtended={setMenuExtended} session={session}/>
                 <div className="w-full min-h-screen py-[32px] px-[48px] bg-slate-50">
