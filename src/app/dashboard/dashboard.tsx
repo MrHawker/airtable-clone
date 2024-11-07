@@ -78,7 +78,7 @@ export function Dashboard({session}:{session:Session}){
             
             {open &&
             
-            <div className="absolute top-12 right-0 z-40 p-[12px] bg-white rounded-md shadow-md border-2 w-72">
+            <div className="fixed top-12 right-0 z-40 p-[12px] bg-white rounded-md shadow-md border-2 w-72">
                 <div className="pt-[8px] pb-[16px] mb-[8px] mx-[8px]">
                     <p className="text-sm font-semibold">
                         {session.user.name}

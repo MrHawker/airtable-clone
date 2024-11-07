@@ -12,14 +12,24 @@ datasource db {
 
 model Base {
     id        Int      @id @default(autoincrement())
-    name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     createdBy   User   @relation(fields: [createdById], references: [id])
     createdById String
 
-    @@index([name])
+    @@index([createdById])
+}
+
+model Data {
+    id        Int      @id @default(autoincrement())
+    base      Int      
+    table     String   
+    key       String
+    type      String   
+    value     Json     
+
+    @@index([base, table])
 }
 
 // Necessary for Next auth

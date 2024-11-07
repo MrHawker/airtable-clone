@@ -1,3 +1,5 @@
+'use client'
+
 import { Session } from "next-auth";
 import { PiHouse } from "react-icons/pi";
 import { GoPeople } from "react-icons/go";
@@ -7,9 +9,21 @@ import { TbWorld } from "react-icons/tb";
 import { GoUpload } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { MdArrowForwardIos } from "react-icons/md";
+import { api } from "~/trpc/react";
+import { useRouter } from 'next/navigation'
 
 export function DashBoardSideNav({menuExtended,setMenuExtended,session}:{menuExtended:boolean,setMenuExtended:React.Dispatch<React.SetStateAction<boolean>>,session:Session|null}){
+    const router = useRouter()
+    const utils = api.useUtils();
+  
+    const createBase = api.base.create.useMutation({
+        onSuccess: async (data) => {
+        await utils.base.invalidate();
+        router.push(`/base/${session?.user.id}/${data.id}`)
+        },
+    });
     
+
     if (menuExtended){
         return (
         <nav onMouseLeave={()=>setTimeout(() => {setMenuExtended(false)}, 100)} className="w-[300px] absolute shadow-lg ">
@@ -30,7 +44,8 @@ export function DashBoardSideNav({menuExtended,setMenuExtended,session}:{menuExt
                         <FiShoppingBag style={{fontSize:'14px'}} className="mt-[1px] mr-2"/>Marketplace</span></button>
                     <button className=" hover:bg-slate-300 py-2 px-3 rounded-sm mb-1"><span className="text-xs flex">
                         <GoUpload style={{fontSize:'14px'}} className="mt-[1px] mr-2"/>Import</span></button>
-                        <button className="border border-slate-300  py-[6px] shadow-md hover:bg-sign-up-button-blue-focus 
+                        <button onClick={()=>{createBase.mutate()}}
+                         className="border border-slate-300  py-[6px] shadow-md hover:bg-sign-up-button-blue-focus 
                                 transition ease-in-out duration-300 rounded-md text-white bg-blue-600 flex justify-center">
                                 <span className="px-3 
                                 font-sm text-sm flex">

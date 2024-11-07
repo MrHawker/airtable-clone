@@ -16,8 +16,14 @@ export default {
         'stronger-contact-sale-bg': '#efdddc',
         'icon-color': '#9297a0',
         'slate-signin': '#f2f2f2',
-        'card-brown': '#944d37'
-      }
+        'card-brown': '#944d37',
+        'data-brown': '#7e422f',
+        'lower-brown': '#854531',
+        'deeper-brown': '#6f3a29',
+      },
+      boxShadow: {
+        'inner-strong': 'inset 0 1px 1px rgba(0, 0, 0, 0.25)', 
+      },
     },
     
     
