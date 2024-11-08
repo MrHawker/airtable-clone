@@ -14,7 +14,7 @@ import { BaseCards } from "../_components/base_cards";
 import { signOut } from "next-auth/react";
 
 export function Dashboard({session}:{session:Session}){
-    const [menuExtended,setMenuExtended] = useState(false);
+    const [menuExtended,setMenuExtended] = useState(true);
     const [open,setOpen] = useState(false)
     return (
         <main className="relative" onClick={()=>setOpen(false)}>
