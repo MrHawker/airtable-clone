@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { HeadNav } from './head_nav'
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
+import { SideNav } from './side_nav';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 export  function Entry({session}:{session:Session}) {
     
@@ -10,12 +12,192 @@ export  function Entry({session}:{session:Session}) {
     const [open,setOpen] = useState(false);
 
     return (
-        <main className="relative " onClick={()=>{setOpen(false)}}>
+        <main className="relative" onClick={()=>{setOpen(false)}}>
             <HeadNav open={open} setOpen={setOpen} session={session}/>
+            <PanelGroup className='fixed' direction='horizontal'>
+                <Panel minSize={15} maxSize={40}  defaultSize={25}>
+                    <SideNav/>
+                </Panel>
+                <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
+                <Panel >
+                <div className='h-screen bg-slate-50 overflow-scroll'>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                    <div>BRUH</div>
+                </div>
+                </Panel>
+            </PanelGroup>
             
-            <div className='h-screen bg-slate-50'></div>
+            {/* <div className='flex'>
+                <SideNav/>
+                <div className='h-screen bg-slate-50'>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                    <div>
+                        BRUH
+                    </div>
+                </div>
+            </div> */}
+            
             {open &&
-            
             <div className="fixed top-12 right-0 z-40 p-[12px] bg-white rounded-md shadow-md border-2 w-72">
                 <div className="pt-[8px] pb-[16px] mb-[8px] mx-[8px]">
                     <p className="text-sm font-semibold">
@@ -41,7 +223,6 @@ export  function Entry({session}:{session:Session}) {
                 <p className="text-xs p-[8px] hover:bg-slate-100 hover:cursor-pointer">Trash</p>
                 <p onClick={()=>signOut({ callbackUrl: "/" })} className="text-xs p-[8px] hover:bg-slate-100 hover:cursor-pointer">Log out</p>
             </div>
-            
             }
         </main>
     )

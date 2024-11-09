@@ -20,6 +20,8 @@ export default {
         'data-brown': '#7e422f',
         'lower-brown': '#854531',
         'deeper-brown': '#6f3a29',
+        'soft-blue': '#d6f2ff',
+        'hover-view-blue': '#c7ecfc' 
       },
       boxShadow: {
         'inner-strong': 'inset 0 1px 1px rgba(0, 0, 0, 0.25)', 

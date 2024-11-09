@@ -5,6 +5,7 @@ import { useState,useEffect } from "react";
 import { Session } from "next-auth";
 import { CiMenuBurger } from "react-icons/ci";
 import { RxMagnifyingGlass } from "react-icons/rx";
+import { TableList } from "../base/[user]/[name]/tables_list";
 
 export function DashboardHeadNav({
     open,
@@ -66,6 +67,7 @@ export function DashboardHeadNav({
                     )}
                 </div>
         </nav>
+        
     </header>
     
   );

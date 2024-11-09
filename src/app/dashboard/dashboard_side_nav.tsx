@@ -26,8 +26,8 @@ export function DashBoardSideNav({menuExtended,setMenuExtended,session}:{menuExt
 
     if (menuExtended){
         return (
-        <nav onMouseLeave={()=>setTimeout(() => {setMenuExtended(false)}, 100)} className="w-[300px] relative shadow-lg mr-16">
-            <div className="h-full fixed w-[300px] pt-4 px-[14px] flex flex-col justify-between border-r-2 bg-white z-30">
+        <nav onMouseLeave={()=>setTimeout(() => {setMenuExtended(false)}, 100)} className="w-[300px] relative shadow-lg mr-[48px]">
+            <div className="h-full fixed w-[300px] pt-4 px-[14px] flex flex-col justify-between border-r-2 bg-white ">
                 <div className="flex flex-col">
                     <button className=" hover:bg-slate-300 py-2 px-3 rounded-sm mb-3"><span className="text-md font-semibold flex justify-between ">Home<MdArrowForwardIos className="mt-[6px] text-xs"/></span></button>
                     <button className=" hover:bg-slate-300 py-2 px-3 rounded-sm "><span className="text-md font-semibold flex justify-between">All workspaces
