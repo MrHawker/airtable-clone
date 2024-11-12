@@ -111,7 +111,7 @@ export function Table(){
                     //     table.options.meta?.updateData(index,)
                     //     handleOnChangeUpdate(row.getValue('rowId'),row.getAllCells)}} 
                     onKeyDown={index == row.getVisibleCells().length - 1 ? (e)=>{if(e.key == 'Tab'){e.preventDefault()}}: ()=>{}}
-                    defaultValue={cell.getValue() ?? ''}
+                    defaultValue={String(cell.getValue()) == 'undefined' ? '' : String(cell.getValue)}
                     >
                     </input>
                   </td>
