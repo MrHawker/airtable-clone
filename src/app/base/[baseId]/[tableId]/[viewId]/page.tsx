@@ -5,7 +5,7 @@ import { auth } from '~/server/auth';
 import { redirect } from 'next/navigation';
 import { HydrateClient } from '~/trpc/server';
 
-export default async function Page({ params }: { params: Promise<{ user: string, name: string }> }) {
+export default async function Page({ params }: { params: Promise<{ baseId: string, tableId: string,viewId: string }> }) {
     
     const session = await auth();
     if(!session){
@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ user: string,
 
     return (
         <HydrateClient>
-            <Entry session={session}/>
+            <Entry params={params} session={session}/>
             
         </HydrateClient>
     )

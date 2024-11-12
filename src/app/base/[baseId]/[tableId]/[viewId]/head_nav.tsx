@@ -1,6 +1,8 @@
 "use client";
 
 
+import { api } from "~/trpc/react";
+
 import { useState,useEffect } from "react";
 import { Session } from "next-auth";
 
@@ -21,6 +23,7 @@ import { IoColorFillOutline } from "react-icons/io5";
 import { CiLineHeight } from "react-icons/ci";
 import { CiShare1 } from "react-icons/ci";
 import { PiMagnifyingGlass } from "react-icons/pi";
+import { useParams, useRouter } from "next/navigation";
 
 export function HeadNav({
     open,
@@ -33,8 +36,6 @@ export function HeadNav({
   {
 
   const [isDesktop,setIsDesktop] = useState(false);
-  
-  
   useEffect(() => {
     
     const isDesktop = () => {
@@ -46,6 +47,23 @@ export function HeadNav({
 
     return () => window.removeEventListener("resize", isDesktop);
   }, []);
+
+  const params = useParams<{ baseId: string; tableId: string, viewId:string }>()
+  const router = useRouter()
+  const utils = api.useUtils();
+  const createTable = api.table.create.useMutation({
+        onSuccess: async (data) => {
+        await utils.table.invalidate();
+        router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
+        },
+  });
+  
+  const handleCreateTable = () =>{
+    createTable.mutate({
+        baseId:params.baseId,
+        name:'default'  
+    });
+  }
   return (
     <header className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
         <nav className="flex justify-between items-center py-[12px] overflow-hidden px-2">
@@ -132,7 +150,7 @@ export function HeadNav({
         <div className="flex justify-between overflow-hidden">
             <div className="flex bg-lower-brown flex-grow pl-[12px] rounded-tr mr-2">
                 <TableList/>
-                <div className="px-[12px] flex flex-col justify-center hover:cursor-pointer">
+                <div onClick={()=>{handleCreateTable()}} className="px-[12px] flex flex-col justify-center hover:cursor-pointer">
                     <RiArrowDownSLine className="text-slate-200 hover:text-white" />
                 </div>
                 <div className="my-[10px] border-slate-300 opacity-50  border-[1px]"></div>

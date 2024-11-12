@@ -47,7 +47,7 @@ export const authConfig = {
   ],
   pages: {
     signIn:'/SignIn',
-    newUser:'/SignUp'
+    newUser:'/SignIn'
   },
   adapter: PrismaAdapter(db),
   callbacks: {

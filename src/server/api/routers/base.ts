@@ -14,27 +14,54 @@ export const baseRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-
-  create: protectedProcedure
-    .mutation(async ({ ctx}) => {
-      const newBase = await ctx.db.base.create({
-        data: {
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
+  
+    create: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const result = await ctx.db.$transaction(async (prisma) => {
+  
+        const newBase = await prisma.base.create({
+          data: {
+            createdBy: { connect: { id: ctx.session.user.id } },
+          },
+        });
+  
+        const newTable = await prisma.table.create({
+          data: {
+            name: 'Table 1',
+            base: { connect: { id: newBase.id } },
+            columns: ['Name', 'Age'],
+            columns_type: ['String', 'Int'],
+            views: {
+              create: [], 
+            },
+            data: {
+              create: [], 
+            },
+          },
+        });
+        const newView = await prisma.view.create({
+          data: {
+            name: 'Grid 1',
+            table: { connect: { id: newTable.id } },
+            sortBy: [],
+            sortOrder: [],
+            filterBy: [],
+            filterVal: [],
+          },
+        });
+  
+        return { newBase:newBase, newTable:newTable, newView:newView };
       });
-      return {id:newBase.id};
+  
+      return result;
     }),
 
   getBases: protectedProcedure.query(async ({ ctx }) => {
-    const base = await ctx.db.base.findMany({
-      
+    const bases = await ctx.db.base.findMany({
       where: { createdBy: { id: ctx.session.user.id } },
     });
-
-    return base ?? null;
+    
+    return bases ?? null;
   }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
 });
