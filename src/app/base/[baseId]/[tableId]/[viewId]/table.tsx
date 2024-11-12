@@ -19,20 +19,20 @@ export function Table(){
     const columns = tables?.columns.map((column) => ({
         accessorKey: column, 
         header: column,       
-        cell: (props:any) => <p>{props.getValue()}</p>, 
-    })) || [];
+         
+    })) ?? [];
 
     columns.push({
         accessorKey: 'rowId', 
         header: 'rowId',       
-        cell: (props:any) => <p>{props.getValue()}</p>, 
+         
     })
     
     const { data: rows_data, isLoading:isRowLoading } = api.table.getRows.useQuery({tableId:params.tableId})
 
     const content = rows_data?.map((row)=>{
-        return { rowId: row.id, ...Object(row.values) };
-
+        // return { rowId: row.id, ...Object(row.values) };
+        return row.values
     })
 
     const [data,setData] = useState<JsonValue[]>(content ?? []);
@@ -54,7 +54,7 @@ export function Table(){
 
     useEffect(() => {
         if (rows_data) {
-          const content = rows_data.map((row) => {return { rowId: row.id, ...Object(row.values) }});
+          const content = rows_data.map((row) => {return row.values});
           setData(content);
         }
       }, [rows_data]); 
@@ -63,11 +63,11 @@ export function Table(){
         data,
         columns,
         getCoreRowModel:getCoreRowModel(),
-        meta:{
-            updateData: (rowIdx: number,columnId: any,value: any) => setData(
-                prev => prev.map((row,index)=> index == rowIdx ? {...Object(prev[rowIdx]),[columnId]:value} : row)
-            )
-        }
+        // meta:{
+        //     updateData: (rowIdx: number,columnId: any,value: any) => setData(
+        //         prev => prev.map((row,index)=> index == rowIdx ? {...Object(prev[rowIdx]),[columnId]:value} : row)
+        //     )
+        // }
     });
 
     return (
@@ -110,7 +110,7 @@ export function Table(){
                     // onChange={(e)=>{
                     //     table.options.meta?.updateData(index,)
                     //     handleOnChangeUpdate(row.getValue('rowId'),row.getAllCells)}} 
-                    onKeyDown={index == row.getVisibleCells().length - 1 ? (e)=>{if(e.key == 'Tab'){e.preventDefault()}}: ()=>{}}
+                    onKeyDown={index == row.getVisibleCells().length - 1 ? (e)=>{if(e.key == 'Tab'){e.preventDefault()}}:undefined}
                     defaultValue={String(cell.getValue()) == 'undefined' ? '' : String(cell.getValue)}
                     >
                     </input>
