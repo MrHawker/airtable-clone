@@ -178,6 +178,9 @@ export const tableRouter = createTRPCRouter({
             where: {
                 tableId: input.tableId, 
             },
+            orderBy: {
+              id: 'asc', 
+          },
         });
         return data.length > 0 ? data : []
     }),
