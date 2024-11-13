@@ -20,8 +20,8 @@ export  function Entry({session,params}:{session:Session,params:Promise<{ baseId
                     <SideNav/>
                 </Panel>
                 <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
-                <Panel >
-                <div className='h-screen bg-slate-100 overflow-scroll'>
+                <Panel>
+                <div  className='h-[600px] w-full bg-slate-100 overflow-scroll relative'>
                     <Table/>
                 </div>
                 </Panel>

@@ -76,7 +76,7 @@ export const tableRouter = createTRPCRouter({
     .input(
         z.object({
           rowId: z.number(),
-          row: z.object({}),
+          row: z.any(),
         })
       )
     .mutation(async ({ ctx, input }) => {
@@ -87,7 +87,7 @@ export const tableRouter = createTRPCRouter({
             id: input.rowId, 
           },
           data: {
-            values: input.row
+            values: input.row as object
           },
         });
   
@@ -96,6 +96,38 @@ export const tableRouter = createTRPCRouter({
   
       return result;
     }),
+    addColumn: protectedProcedure
+    .input(
+      z.object({
+        tableId: z.string(),
+        columnName: z.string(),
+        columnType: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { tableId, columnName, columnType } = input;
+      const result = await ctx.db.$transaction(async (prisma) => {
+        
+        const newTable = await prisma.table.update({
+          where: {
+            id: tableId, 
+          },
+          data: {
+            columns: {
+              push: columnName, 
+            },
+            columns_type: {
+              push: columnType, 
+            },
+          },
+        });
+
+        return { newTable };
+      });
+
+      return result;
+    }),
+    
     getTables: protectedProcedure
     .input(
     z.object({
