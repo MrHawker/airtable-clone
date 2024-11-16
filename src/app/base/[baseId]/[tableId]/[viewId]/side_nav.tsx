@@ -13,8 +13,29 @@ import { MdOutlineChecklist } from "react-icons/md";
 import { FaChartGantt } from "react-icons/fa6";
 import { LiaWpforms } from "react-icons/lia";
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { api } from "~/trpc/react";
 
-export function SideNav() {
+export function SideNav(
+    {
+        viewList,
+        setViewList
+    }:
+    {
+        viewList:string[],
+        setViewList: React.Dispatch<React.SetStateAction<string[]>>,
+    }
+) {
+    const router = useRouter()
+    const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
+
+    const addView = api.view.create.useMutation({
+        onSuccess: (newView) => {
+            setViewList((prev)=>[...prev, newView.newView.id])
+            window.location.href = `/base/${params.baseId}/${params.tableId}/${newView.newView.id}`
+        },
+    });
+
     const [open,setIsOpen] = useState(true)
     return (
         <div className="px-[12px] pt-[8px] w-full h-full flex flex-col justify-between">
@@ -30,7 +51,7 @@ export function SideNav() {
                         <GoGear/>
                     </div>
                 </div>
-                <Views/>
+                <Views viewList={viewList} setViewList={setViewList}/>
             </div>
             <div>
                 <hr></hr>
@@ -43,7 +64,9 @@ export function SideNav() {
                     </div>
                     {open &&
                     <div>
-                        <div className="rounded flex justify-between hover:cursor-pointer py-2 hover:bg-slate-signin px-[12px]">
+                        <div
+                        onClick={()=>addView.mutate({tableId:params.tableId})}
+                        className="rounded flex justify-between hover:cursor-pointer py-2 hover:bg-slate-signin px-[12px]">
                             <div className="flex">
                                 <FaTable className="mr-2 text-blue-400"/>
                                 <span className="text-xs font-medium">Grid</span>

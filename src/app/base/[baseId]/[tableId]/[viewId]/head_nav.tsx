@@ -58,7 +58,7 @@ export function HeadNav({
 
   const [isDesktop,setIsDesktop] = useState(false);
   const [filterbutton,setFilterButton] = useState(false);
-  const [sortbutton,setSortBUtton] = useState(false)
+  const [sortbutton,setSortButton] = useState(false)
   
   useEffect(() => {
     
@@ -78,7 +78,6 @@ export function HeadNav({
   const createTable = api.table.create.useMutation({
         onSuccess: async (data) => {
         await utils.table.invalidate();
-        
         router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
         },
   });
@@ -111,9 +110,35 @@ export function HeadNav({
     });
     
   };
-  
+  const handleSetSort = (index:number,field:string,value:string) =>{
+    setSorts(prevSorts => {
+        const newSorts = [...prevSorts];
+        if(field === "id"){
+            newSorts[index] = {
+                ...(newSorts[index] ?? {}),
+                id: value, 
+                desc: newSorts[index]?.desc ?? false, 
+            };
+        }else if(field === "order"){
+            newSorts[index] = {
+                ...(newSorts[index] ?? {}),
+                id: newSorts[index]?.id ?? "", 
+                desc: value === "Descending" ? true : false, 
+            };
+        }
+        
+        return newSorts;
+    });
+  }
+  const handleDeleteSort = (index:number) =>{
+    setSorts((prevSorts) => {
+        const newSorts = prevSorts.filter((fil, i) => i !== index);
+        return newSorts;
+      });
+  }
+
   return (
-    <header onClick={()=>{setFilterButton(false);setSortBUtton(false)}} className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
+    <header onClick={()=>{setFilterButton(false);setSortButton(false)}} className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
         <nav className="flex justify-between items-center py-[12px] overflow-hidden px-2">
             <div className="flex items-center px-2 ">
                 <button className="flex ml-2 lg:ml-0 mr-2 ">
@@ -241,7 +266,7 @@ export function HeadNav({
                         <div className="flex flex-col justify-center h-full"><BsEyeSlash /></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Hide fields</div>}
                     </div>
-                    <div onClick={(e)=>{e.stopPropagation();setFilterButton(true)}} className="relative">
+                    <div onClick={(e)=>{e.stopPropagation();setSortButton(false);setFilterButton(true)}} className="relative">
                         <div  className="flex px-[8px] py-[4px] text-black relative h-full  rounded transition duration-200 hover:bg-slate-signin hover:cursor-pointer">
                             <div className="flex flex-col justify-center h-full"><IoFilterOutline/></div> 
                             {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px] ">Filter</div>}
@@ -327,10 +352,70 @@ export function HeadNav({
                         <div className="flex flex-col justify-center h-full"><FaRegObjectUngroup/></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Group</div>}
                     </div>
-                    <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
-                        <div className="flex flex-col justify-center h-full"><BiSortAlt2/></div>
-                        {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Sort</div>}
+                    <div onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(true)}} className="relative">
+                        <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
+                            <div className="flex flex-col justify-center h-full"><BiSortAlt2/></div>
+                            {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Sort</div>}
+                        </div>
+                        {
+                            sortbutton && 
+                            <div className="absolute top-[30px] bg-white border  rounded shadow-xl">
+                            {
+                                <div>
+                                    <div className="px-[16px] pt-[16px] w-[296px] text-xs text-slate-400 ">
+                                        Sort by
+                                    </div>
+                                    <div className="pt-[12px] px-[16px] space-y-3">
+                                        {
+                                            sorts?.map((sort,index)=>{
+                                                
+                                                return <div key={index} className="flex text-black text-xs">
+
+                                                    <div id={`SortDiv_${index}`}  className="flex">
+                                                        <select onChange={(e)=>handleSetSort(index,"id",e.target.value)} value={String(sort.id) || ""} className="border mr-2">
+                                                            <option value="" disabled>
+                                                            Choose a column
+                                                            </option>
+                                                            {
+                                                                columns?.map((col,index)=>{
+                                                                    if (col.header?.toString() === 'rowId') {
+                                                                        return null; 
+                                                                    }
+                                                                    return <option key={index} >
+                                                                        {col.header?.toString()}
+                                                                    </option>
+                                                                })
+                                                            }
+                                                            
+                                                        </select>
+                                                        <select onChange={(e)=>handleSetSort(index,"order",e.target.value)} value = {sort.desc ? "Descending":"Ascending"} className="border">
+                                                            <option value="Ascending">Ascending</option>
+                                                            <option value="Descending">Descending</option>
+                                                        </select>
+                                                    </div>
+                                                    <div onClick={()=>handleDeleteSort(index)} className="px-2 py-1 hover:bg-red-500 hover:cursor-pointer ml-3 transition ease-in-out duration-200">
+                                                    <FaRegTrashAlt className=" text-md "/>
+                                                    </div>
+                                                    
+                                                </div>
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                                
+                            }
+                            <div className="p-[16px] flex text-slate-500 ">
+                                <div onClick={()=>{setSorts((prev) => [...prev, {id:'',desc:false}]);}} className="flex mr-[16px] hover:cursor-pointer hover:text-black">
+                                    <GoPlus/>
+                                    <span className="font-semibold text-xs">
+                                        Add sort
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        }
                     </div>
+                    
                     <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                         <div className="flex flex-col justify-center h-full"><IoColorFillOutline/></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Color</div>}

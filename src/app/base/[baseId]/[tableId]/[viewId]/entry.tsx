@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HeadNav } from './head_nav'
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
@@ -8,19 +8,36 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Table } from './table';
 import { ColumnDef, ColumnFiltersState,SortingState } from '@tanstack/react-table';
 import { JsonValue } from '@prisma/client/runtime/library';
+import { useParams } from 'next/navigation';
+import { api } from '~/trpc/react';
 interface RowData {
     values: JsonValue;
     rowId: number;
 }
-export  function Entry({session,params}:{session:Session,params:Promise<{ baseId: string, tableId: string,viewId: string }>}) {
+export  function Entry({session}:{session:Session}) {
     
+    const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
+    const { data: views, isLoading: isViewsLoading } = api.view.getViews.useQuery({tableId:params.tableId});
     
     const [open,setOpen] = useState(false);
     const [filters,setFilters] = useState<ColumnFiltersState>([])
     
     const [sorts,setSorts] = useState<SortingState>([])
     const [columns, setColumns] = useState<ColumnDef<JsonValue>[]>([]);
+    const [viewList,setViewList] = useState<string[]>([]);
     
+    useEffect(()=>{
+        if (isViewsLoading) return;
+        const content = views?.map((view)=>{
+            return view.id
+        })
+        setViewList(content ?? [])
+    },[views])
+
+    if(isViewsLoading){
+        return <div>Loading...</div>
+    }
+
     return (
         <main className="relative" onClick={()=>{setOpen(false)}}>
             <HeadNav 
@@ -31,7 +48,7 @@ export  function Entry({session,params}:{session:Session,params:Promise<{ baseId
             session={session}/>
             <PanelGroup className='fixed' direction='horizontal'>
                 <Panel minSize={15} maxSize={40}  defaultSize={25}>
-                    <SideNav/>
+                    <SideNav viewList = {viewList} setViewList = {setViewList}/>
                 </Panel>
                 <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
                 <Panel>

@@ -43,6 +43,9 @@ export const viewRouter = createTRPCRouter({
             where: {
                 tableId: input.tableId, 
             },
+            orderBy: {
+              id: 'asc', 
+          },
         });
         return tables;
     }),
