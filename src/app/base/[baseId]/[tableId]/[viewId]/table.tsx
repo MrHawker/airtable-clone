@@ -68,8 +68,8 @@ export function Table({
                 if(x.values == null || y.values == null) return 0;
                 for (const sort of sorts){
                     if(sort.id === "") return 0;
-                    if(String(x.values[sort.id as keyof object]) === "undefined" || String(x.values[sort.id as keyof object]) === "") return -1
-                    if(String(y.values[sort.id as keyof object]) === "undefined" || String(y.values[sort.id as keyof object]) === "") return 1
+                    if(String(x.values[sort.id as keyof object]) === "undefined" || String(x.values[sort.id as keyof object]) === "") return 1
+                    if(String(y.values[sort.id as keyof object]) === "undefined" || String(y.values[sort.id as keyof object]) === "") return -1
                     if(x.values[sort.id as keyof object] > y.values[sort.id as keyof object]){
                         return sort.desc ? -1 : 1
                     }
