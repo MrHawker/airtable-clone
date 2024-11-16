@@ -28,7 +28,9 @@ export function Views(
     const util = api.useUtils()
     const updateView = api.view.editView.useMutation({
         onSuccess: async () =>{
-            setTimeout(()=>{},300)
+            setTimeout(()=>{
+                //nothing to see here
+            },300)
             await util.invalidate()
         }
     });
