@@ -25,7 +25,13 @@ export function Views(
     }
 ){
     const router = useRouter()
-    const updateView = api.view.editView.useMutation({});
+    const util = api.useUtils()
+    const updateView = api.view.editView.useMutation({
+        onSuccess: async () =>{
+            setTimeout(()=>{},300)
+            await util.invalidate()
+        }
+    });
 
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
 
@@ -34,7 +40,6 @@ export function Views(
         const filterVal: string[] = [];
         const sortId: string[] = [];
         const sortOrder: string[] = [];
-        console.log(sorts)
         filters.forEach((filter) => {
             if (filter.value == '' || String(filter.value) == '') return;
             filterId.push(filter.id);
@@ -52,9 +57,9 @@ export function Views(
             sortBy: sortId,
             sortOrder: sortOrder
         });
-        setTimeout(()=>{
-            router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
-        },1000)
+        
+        router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
+        
     };
     return(
         <div className="flex flex-col flex-grow  pt-[8px] py-[12px] space-y-2">

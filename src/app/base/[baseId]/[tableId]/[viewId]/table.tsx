@@ -38,7 +38,7 @@ export function Table({
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
     const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId });
     const { data: rows_data, isLoading: isRowLoading } = api.table.getRows.useQuery({ tableId: params.tableId });
-    const { data: view, isLoading: isViewLoading } = api.view.getViewById.useQuery({ viewId: params.viewId });
+    const { data: view, isLoading: isViewLoading } = api.view.getViewById.useQuery({ viewId: params.viewId },{suspense:true});
 
     
     const [tableData, setTableData] = useState<TableData>({ raw: [], filtered: [] });
@@ -84,7 +84,6 @@ export function Table({
             ;
     };
 
-    
     const updateTableData = (newRawData: RowData[]) => {
         setTableData({
             raw: newRawData,
@@ -106,6 +105,7 @@ export function Table({
             id: sort,
             desc: view?.sortOrder.at(index) === "Descending" ? true : false
         }));
+        console.log("SHIT")
         setFilters(content ?? []);
         setSorts(content2 ?? [])
     }, [view,params.viewId]);
@@ -140,7 +140,7 @@ export function Table({
     useEffect(() => {
         updateTableData(tableData.raw);
     }, [filters,sorts]);
-    
+
     useEffect(() => {
         if (tables?.columns) {
             const fields = tables.columns.map((column) => ({
