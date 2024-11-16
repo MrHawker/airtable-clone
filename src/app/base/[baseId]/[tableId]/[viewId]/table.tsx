@@ -111,10 +111,8 @@ export function Table({
     }, [view,params.viewId]);
 
     useEffect(() => {
-        if ((filters.length === 0 && sorts.length === 0)) {
-            return;
-        }
         
+
         const filterId: string[] = [];
         const filterVal: string[] = [];
         const sortId: string[] = [];
