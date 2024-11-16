@@ -114,6 +114,7 @@ export function Table({
         if ((filters.length === 0 && sorts.length === 0)) {
             return;
         }
+        
         const filterId: string[] = [];
         const filterVal: string[] = [];
         const sortId: string[] = [];
@@ -137,7 +138,7 @@ export function Table({
             sortOrder: sortOrder
         });
         updateTableData(tableData.raw);
-    }, [filters,sorts]);
+    }, [filters,sorts,params.viewId]);
 
     
     useEffect(() => {
