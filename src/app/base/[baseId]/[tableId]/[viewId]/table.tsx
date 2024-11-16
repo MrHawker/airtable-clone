@@ -110,34 +110,36 @@ export function Table({
         setSorts(content2 ?? [])
     }, [view,params.viewId]);
 
+    // useEffect(() => {
+    //     if(!ref.current) return;
+    //     const filterId: string[] = [];
+    //     const filterVal: string[] = [];
+    //     const sortId: string[] = [];
+    //     const sortOrder: string[] = [];
+        
+    //     filters.forEach((filter) => {
+    //         if (filter.value == '' || String(filter.value) == '') return;
+    //         filterId.push(filter.id);
+    //         filterVal.push(String(filter.value));
+    //     });
+    //     sorts.forEach((sort) => {
+    //         if (sort.id === '') return;
+    //         sortId.push(sort.id);
+    //         sortOrder.push(sort.desc ? "Descending" : "Ascending");
+    //     });
+    //     updateView.mutate({
+    //         viewId: params.viewId,
+    //         filterBy: filterId,
+    //         filterVal: filterVal,
+    //         sortBy: sortId,
+    //         sortOrder: sortOrder
+    //     });
+    //     updateTableData(tableData.raw);
+    // }, [filters,sorts,params.viewId]);
+
     useEffect(() => {
-        
-
-        const filterId: string[] = [];
-        const filterVal: string[] = [];
-        const sortId: string[] = [];
-        const sortOrder: string[] = [];
-        
-        filters.forEach((filter) => {
-            if (filter.value == '' || String(filter.value) == '') return;
-            filterId.push(filter.id);
-            filterVal.push(String(filter.value));
-        });
-        sorts.forEach((sort) => {
-            if (sort.id === '') return;
-            sortId.push(sort.id);
-            sortOrder.push(sort.desc ? "Descending" : "Ascending");
-        });
-        updateView.mutate({
-            viewId: params.viewId,
-            filterBy: filterId,
-            filterVal: filterVal,
-            sortBy: sortId,
-            sortOrder: sortOrder
-        });
         updateTableData(tableData.raw);
-    }, [filters,sorts,params.viewId]);
-
+    }, [filters,sorts]);
     
     useEffect(() => {
         if (tables?.columns) {

@@ -48,7 +48,7 @@ export  function Entry({session}:{session:Session}) {
             session={session}/>
             <PanelGroup className='fixed' direction='horizontal'>
                 <Panel minSize={15} maxSize={40}  defaultSize={25}>
-                    <SideNav viewList = {viewList} setViewList = {setViewList}/>
+                    <SideNav sorts={sorts} setSorts={setSorts} filters={filters} setFilters={setFilters} viewList = {viewList} setViewList = {setViewList}/>
                 </Panel>
                 <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
                 <Panel>

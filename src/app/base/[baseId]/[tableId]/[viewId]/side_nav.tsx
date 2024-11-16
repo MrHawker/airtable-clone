@@ -15,15 +15,24 @@ import { LiaWpforms } from "react-icons/lia";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
 export function SideNav(
     {
         viewList,
-        setViewList
+        setViewList,
+        filters,
+        setFilters,
+        sorts,
+        setSorts,
     }:
     {
         viewList:string[],
         setViewList: React.Dispatch<React.SetStateAction<string[]>>,
+        filters: ColumnFiltersState,
+        setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
+        sorts: SortingState,
+        setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
     }
 ) {
     const router = useRouter()
@@ -51,7 +60,7 @@ export function SideNav(
                         <GoGear/>
                     </div>
                 </div>
-                <Views viewList={viewList} setViewList={setViewList}/>
+                <Views sorts={sorts} setSorts={setSorts} filters={filters} setFilters={setFilters} viewList={viewList} setViewList={setViewList}/>
             </div>
             <div>
                 <hr></hr>

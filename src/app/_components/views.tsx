@@ -1,4 +1,5 @@
 'use client'
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { useParams,useRouter } from "next/navigation";
 
 import { FaTable } from "react-icons/fa6";
@@ -8,18 +9,52 @@ import { api } from "~/trpc/react";
 export function Views(
     {
         viewList,
-        setViewList
+        setViewList,
+        filters,
+        setFilters,
+        sorts,
+        setSorts,
     }:
     {
         viewList:string[],
         setViewList: React.Dispatch<React.SetStateAction<string[]>>,
+        filters: ColumnFiltersState,
+        setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
+        sorts: SortingState,
+        setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
     }
 ){
     const router = useRouter()
+    const updateView = api.view.editView.useMutation({});
+
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
+
     const handleViewChange = (viewId: string) => {
-        router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
-        
+        const filterId: string[] = [];
+        const filterVal: string[] = [];
+        const sortId: string[] = [];
+        const sortOrder: string[] = [];
+        console.log(sorts)
+        filters.forEach((filter) => {
+            if (filter.value == '' || String(filter.value) == '') return;
+            filterId.push(filter.id);
+            filterVal.push(String(filter.value));
+        });
+        sorts.forEach((sort) => {
+            if (sort.id === '') return;
+            sortId.push(sort.id);
+            sortOrder.push(sort.desc ? "Descending" : "Ascending");
+        });
+        updateView.mutate({
+            viewId: params.viewId,
+            filterBy: filterId,
+            filterVal: filterVal,
+            sortBy: sortId,
+            sortOrder: sortOrder
+        });
+        setTimeout(()=>{
+            router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
+        },1000)
     };
     return(
         <div className="flex flex-col flex-grow  pt-[8px] py-[12px] space-y-2">
