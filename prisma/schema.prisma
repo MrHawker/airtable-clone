@@ -55,7 +55,7 @@ model View {
 }
 
 model Data {
-    id           Int      @id @default(autoincrement())      
+    id           Int       @id @default(autoincrement())      
     table        Table     @relation(fields: [tableId], references: [id])
     tableId      String
     values       Json

@@ -11,7 +11,6 @@ export const viewRouter = createTRPCRouter({
     .input(
         z.object({
           tableId: z.string(),
-          name: z.string(),
         })
       )
     .mutation(async ({ ctx, input }) => {
@@ -47,6 +46,7 @@ export const viewRouter = createTRPCRouter({
         });
         return tables;
     }),
+
     getFirstView: protectedProcedure
     .input(
     z.object({
@@ -59,6 +59,50 @@ export const viewRouter = createTRPCRouter({
             },
         });
         return tables;
+    }),
+    getViewById: protectedProcedure
+    .input(
+    z.object({
+      viewId: z.string(),  
+    }))
+    .query(async ({ ctx, input }) => {
+        const view = await ctx.db.view.findFirst({
+            where: {
+                id: input.viewId, 
+            },
+        });
+        return view;
+    }),
+
+    editView: protectedProcedure
+    .input(
+        z.object({
+          viewId: z.string(),
+          sortBy: z.array(z.string()),  
+          sortOrder: z.array(z.string()),  
+          filterBy: z.array(z.string()),
+          filterVal: z.array(z.string())
+        })
+      )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.$transaction(async (prisma) => {
+        
+        const newView = await prisma.view.update({
+          where: {
+            id: input.viewId, 
+          },
+          data: {
+            sortBy: input.sortBy,
+            sortOrder: input.sortOrder,
+            filterBy: input.filterBy,
+            filterVal: input.filterVal,
+          },
+        });
+  
+        return { newView:newView };
+      });
+  
+      return result;
     }),
     
 })

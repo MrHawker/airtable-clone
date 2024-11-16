@@ -24,18 +24,42 @@ import { CiLineHeight } from "react-icons/ci";
 import { CiShare1 } from "react-icons/ci";
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { useParams, useRouter } from "next/navigation";
+import { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { FaRegTrashAlt } from "react-icons/fa";
+
+interface RowData {
+    values: JsonValue;
+    rowId: number;
+}
 
 export function HeadNav({
     open,
     setOpen,
+    filters,
+    setFilters,
+    sorts,
+    setSorts,
+    columns,
+    setColumns,
     session
     }:
-    {open:boolean,
+    {
+    open:boolean,
     setOpen:React.Dispatch<React.SetStateAction<boolean>>,
+    filters:ColumnFiltersState,
+    setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
+    sorts:SortingState,
+    setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
+    columns: ColumnDef<JsonValue>[],
+    setColumns: React.Dispatch<React.SetStateAction<ColumnDef<JsonValue>[]>>
     session:Session|null}) 
   {
 
   const [isDesktop,setIsDesktop] = useState(false);
+  const [filterbutton,setFilterButton] = useState(false);
+  const [sortbutton,setSortBUtton] = useState(false)
+  
   useEffect(() => {
     
     const isDesktop = () => {
@@ -65,8 +89,31 @@ export function HeadNav({
         name:'default'  
     });
   }
+
+  const handleDeleteFilter = (index: number) => {
+    setFilters((prevFilters) => {
+      const updatedFilters = prevFilters.filter((fil, i) => i !== index);
+      return updatedFilters;
+    });
+  };
+
+  const handleSetFilter = (index:number,field:string,value:string) => {
+        
+    setFilters(prevFilters => {
+        const newFilters = [...prevFilters];
+        newFilters[index] = {
+            ...(newFilters[index] ?? {}),
+            id: newFilters[index]?.id ?? "", 
+            value: newFilters[index]?.value ?? "", 
+            [field]: value ?? "",
+        };
+        return newFilters;
+    });
+    
+  };
+  
   return (
-    <header className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
+    <header onClick={()=>{setFilterButton(false);setSortBUtton(false)}} className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
         <nav className="flex justify-between items-center py-[12px] overflow-hidden px-2">
             <div className="flex items-center px-2 ">
                 <button className="flex ml-2 lg:ml-0 mr-2 ">
@@ -116,13 +163,6 @@ export function HeadNav({
                                 <p className="ml-[4px]">Help</p>
                             </div>
                         </li>
-                        {/* {isDesktop &&
-                            <li className="mr-[8px] hover:cursor-pointer">
-                                <div className="text-center bg-deeper-brown rounded-2xl px-[14px] py-[8px] shadow-inner">
-                                    <p>Trial: 9 days left</p>
-                                </div>
-                            </li>
-                        } */}
                         
                         <li className="mr-[8px] bg-slate-50 hover:cursor-pointer hover:bg-white rounded-2xl transition ease-in-out duration-200 py-[6px] px-[12px] mx-[8px]">
                             <div className="flex text-center">
@@ -183,7 +223,7 @@ export function HeadNav({
                 </div>
             </div>
         </div>
-        <div className="flex justify-between overflow-hidden bg-white py-[6px] " >
+        <div className="flex justify-between overflow-x-clip bg-white py-[6px] " >
             <div className="pl-[12px] flex">
                 <button className="flex bg-slate-signin mr-[8px] px-[8px] py-[7px] rounded border border-white hover:border-slate-200">
                     <div className="flex flex-col justify-center text-black h-full"><AiOutlineMenu style={{fontSize:'14px'}}/></div>
@@ -201,9 +241,87 @@ export function HeadNav({
                         <div className="flex flex-col justify-center h-full"><BsEyeSlash /></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Hide fields</div>}
                     </div>
-                    <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
-                        <div className="flex flex-col justify-center h-full"><IoFilterOutline/></div> 
-                        {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Filter</div>}
+                    <div onClick={(e)=>{e.stopPropagation();setFilterButton(true)}} className="relative">
+                        <div  className="flex px-[8px] py-[4px] text-black relative h-full  rounded transition duration-200 hover:bg-slate-signin hover:cursor-pointer">
+                            <div className="flex flex-col justify-center h-full"><IoFilterOutline/></div> 
+                            {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px] ">Filter</div>}
+                        </div>
+                        {
+                            filterbutton && 
+                            <div className="absolute top-[30px] bg-white border  rounded shadow-xl">
+                            {
+                                filters.length == 0 ?
+                                <div className="px-[16px] pt-[16px] w-[296px] text-xs text-slate-400 ">
+                                No filter conditions are applied
+                                </div>
+                                :
+                                <div>
+                                    <div className="px-[16px] pt-[16px] text-xs text-slate-400 ">
+                                        In this view, show records
+                                        
+                                    </div>
+                                    <div className="pt-[12px] px-[16px] space-y-3">
+                                        {
+                                            filters?.map((filter,index)=>{
+                                                
+                                                return <div key={index} className="flex text-black text-xs">
+                                                    <div className="px-[8px] ">
+                                                        {
+                                                            index == 0 ?
+                                                            <span className="px-[8px] text-center">Where</span>
+                                                            :
+                                                            <span className="px-[8px] text-center mr-[14px]">And</span>
+                                                        }
+                                                        
+                                                    </div>
+                                                    <div id={`FilterDiv_${index}`}  className="flex">
+                                                        <select onChange={(e)=>handleSetFilter(index,"id",e.target.value)} value={String(filter.id) || "default"} className="border mr-2">
+                                                            <option value="default" disabled>
+                                                            Choose a column
+                                                            </option>
+                                                            {
+                                                                columns?.map((col,index)=>{
+                                                                    if (col.header?.toString() === 'rowId') {
+                                                                        return null; 
+                                                                    }
+                                                                    return <option key={index} >
+                                                                        {col.header?.toString()}
+                                                                    </option>
+                                                                })
+                                                            }
+                                                            
+                                                        </select>
+                                                        <select onChange={(e)=>handleSetFilter(index,"value",e.target.value)} value = {String(filter.value) || "default"} className="border">
+                                                            <option value="default" disabled>
+                                                            Choose a kind
+                                                            </option>
+                                                            <option value="Empty">Empty</option>
+                                                            <option value="Not Empty">Not Empty</option>
+                                                        </select>
+                                                    </div>
+                                                    <div onClick={()=>handleDeleteFilter(index)} className="px-2 py-1 hover:bg-red-500 hover:cursor-pointer ml-3 transition ease-in-out duration-200">
+                                                    <FaRegTrashAlt className=" text-md "/>
+                                                    </div>
+                                                    
+                                                </div>
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                                
+                            }
+                            
+                            <div className="p-[16px] flex text-slate-500 ">
+                                <div onClick={()=>{setFilters((prev) => [...prev, {id:'',value:''}]);}} className="flex mr-[16px] hover:cursor-pointer hover:text-black">
+                                    <GoPlus/>
+                                    <span className="font-semibold text-xs">
+                                        Add condition
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        
                     </div>
                     <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                         <div className="flex flex-col justify-center h-full"><FaRegObjectUngroup/></div>

@@ -6,15 +6,29 @@ import { signOut } from 'next-auth/react';
 import { SideNav } from './side_nav';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Table } from './table';
-
+import { ColumnDef, ColumnFiltersState,SortingState } from '@tanstack/react-table';
+import { JsonValue } from '@prisma/client/runtime/library';
+interface RowData {
+    values: JsonValue;
+    rowId: number;
+}
 export  function Entry({session,params}:{session:Session,params:Promise<{ baseId: string, tableId: string,viewId: string }>}) {
     
     
     const [open,setOpen] = useState(false);
-
+    const [filters,setFilters] = useState<ColumnFiltersState>([])
+    
+    const [sorts,setSorts] = useState<SortingState>([])
+    const [columns, setColumns] = useState<ColumnDef<JsonValue>[]>([]);
+    
     return (
         <main className="relative" onClick={()=>{setOpen(false)}}>
-            <HeadNav open={open} setOpen={setOpen} session={session}/>
+            <HeadNav 
+            open={open} setOpen={setOpen} 
+            filters={filters} setFilters={setFilters} 
+            sorts={sorts} setSorts={setSorts}
+            columns={columns} setColumns={setColumns}
+            session={session}/>
             <PanelGroup className='fixed' direction='horizontal'>
                 <Panel minSize={15} maxSize={40}  defaultSize={25}>
                     <SideNav/>
@@ -22,7 +36,11 @@ export  function Entry({session,params}:{session:Session,params:Promise<{ baseId
                 <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
                 <Panel>
                 <div  className='h-[600px] w-full bg-slate-100 overflow-scroll relative'>
-                    <Table/>
+                    <Table 
+                    filters={filters} setFilters={setFilters} 
+                    sorts={sorts} setSorts={setSorts}
+                    columns={columns} setColumns={setColumns}
+                    />
                 </div>
                 </Panel>
             </PanelGroup>
