@@ -98,14 +98,26 @@ export function HeadNav({
   }
 
   const handleDeleteFilter = (index: number) => {
+    handleChangeConfig(filters.filter((fil, i) => i !== index),sorts)
     setFilters((prevFilters) => {
       const updatedFilters = prevFilters.filter((fil, i) => i !== index);
       return updatedFilters;
     });
+    
+    
   };
 
   const handleSetFilter = (index:number,field:string,value:string) => {
-        
+
+    const newFilters = [...filters];
+        newFilters[index] = {
+            ...(newFilters[index] ?? {}),
+            id: newFilters[index]?.id ?? "", 
+            value: newFilters[index]?.value ?? "", 
+            [field]: value ?? "",
+    };
+    handleChangeConfig(newFilters,sorts)
+
     setFilters(prevFilters => {
         const newFilters = [...prevFilters];
         newFilters[index] = {
@@ -117,8 +129,24 @@ export function HeadNav({
         return newFilters;
     });
     
+    
   };
   const handleSetSort = (index:number,field:string,value:string) =>{
+    const newSorts = [...sorts];
+        if(field === "id"){
+            newSorts[index] = {
+                ...(newSorts[index] ?? {}),
+                id: value, 
+                desc: newSorts[index]?.desc ?? false, 
+            };
+        }else if(field === "order"){
+            newSorts[index] = {
+                ...(newSorts[index] ?? {}),
+                id: newSorts[index]?.id ?? "", 
+                desc: value === "Descending" ? true : false, 
+            };
+    }
+    handleChangeConfig(filters,newSorts)
     setSorts(prevSorts => {
         const newSorts = [...prevSorts];
         if(field === "id"){
@@ -139,10 +167,40 @@ export function HeadNav({
     });
   }
   const handleDeleteSort = (index:number) =>{
+    const newSorts = sorts.filter((fil, i) => i !== index);
+    handleChangeConfig(filters,newSorts)
     setSorts((prevSorts) => {
         const newSorts = prevSorts.filter((fil, i) => i !== index);
+        
         return newSorts;
       });
+  }
+
+  const updateView = api.view.editView.useMutation({});
+
+  const handleChangeConfig = (filters:ColumnFiltersState,sorts:SortingState) =>{
+        const filterId: string[] = [];
+        const filterVal: string[] = [];
+        const sortId: string[] = [];
+        const sortOrder: string[] = [];
+        
+        filters.forEach((filter) => {
+            if (filter.value == '' || String(filter.value) == '') return;
+            filterId.push(filter.id);
+            filterVal.push(String(filter.value));
+        });
+        sorts.forEach((sort) => {
+            if (sort.id === '') return;
+            sortId.push(sort.id);
+            sortOrder.push(sort.desc ? "Descending" : "Ascending");
+        });
+        updateView.mutate({
+            viewId: params.viewId,
+            filterBy: filterId,
+            filterVal: filterVal,
+            sortBy: sortId,
+            sortOrder: sortOrder
+        });
   }
 
   return (

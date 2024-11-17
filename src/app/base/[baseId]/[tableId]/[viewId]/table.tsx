@@ -40,9 +40,22 @@ export function Table({
     const ref = useRef(false);
     
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
-    const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId });
-    const { data: rows_data, isLoading: isRowLoading } = api.table.getRows.useQuery({ tableId: params.tableId });
-    const { data: view, isLoading: isViewLoading } = api.view.getViewById.useQuery({ viewId: params.viewId },{suspense:true});
+    const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId },
+        { 
+            staleTime: 0,
+        }
+    );
+    const { data: rows_data, isLoading: isRowLoading } = api.table.getRows.useQuery({ tableId: params.tableId },
+        { 
+            staleTime: 0,
+        }
+    );
+    const { data: view, isLoading: isViewLoading } = api.view.getViewById.useQuery({ viewId: params.viewId },
+        { 
+            staleTime: 0,
+        }
+    );
+
 
     
     const [tableData, setTableData] = useState<TableData>({ raw: [], filtered: [] });
