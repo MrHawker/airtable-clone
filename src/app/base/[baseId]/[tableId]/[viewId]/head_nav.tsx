@@ -76,13 +76,13 @@ export function HeadNav({
   }, []);
 
   const params = useParams<{ baseId: string; tableId: string, viewId:string }>()
-  const router = useRouter()
+  
   const utils = api.useUtils();
   const createTable = api.table.create.useMutation({
         onSuccess: async (data) => {
         await utils.table.invalidate();
         
-        router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
+        window.location.href = `/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`
         },
   });
 
