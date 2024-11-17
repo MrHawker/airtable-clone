@@ -27,11 +27,9 @@ import { useParams, useRouter } from "next/navigation";
 import { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { RxCross1 } from "react-icons/rx";
+import { useDebouncedCallback } from "use-debounce";
 
-interface RowData {
-    values: JsonValue;
-    rowId: number;
-}
 
 export function HeadNav({
     open,
@@ -40,6 +38,8 @@ export function HeadNav({
     setFilters,
     sorts,
     setSorts,
+    searchKey,
+    setSearchKey,
     columns,
     setColumns,
     session
@@ -51,6 +51,8 @@ export function HeadNav({
     setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
     sorts:SortingState,
     setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
+    searchKey:string,
+    setSearchKey: React.Dispatch<React.SetStateAction<string>>,
     columns: ColumnDef<JsonValue>[],
     setColumns: React.Dispatch<React.SetStateAction<ColumnDef<JsonValue>[]>>
     session:Session|null}) 
@@ -59,9 +61,10 @@ export function HeadNav({
   const [isDesktop,setIsDesktop] = useState(false);
   const [filterbutton,setFilterButton] = useState(false);
   const [sortbutton,setSortButton] = useState(false)
-  
+  const [searchbutton,setSearchButton] = useState(false)
+
   useEffect(() => {
-    
+
     const isDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
@@ -82,7 +85,11 @@ export function HeadNav({
         router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
         },
   });
-  
+
+  const handleSearchChange = useDebouncedCallback((keyword:string) => {
+        setSearchKey(keyword)
+  }, 300);
+
   const handleCreateTable = () =>{
     createTable.mutate({
         baseId:params.baseId,
@@ -267,7 +274,7 @@ export function HeadNav({
                         <div className="flex flex-col justify-center h-full"><BsEyeSlash /></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Hide fields</div>}
                     </div>
-                    <div onClick={(e)=>{e.stopPropagation();setSortButton(false);setFilterButton(true)}} className="relative">
+                    <div onClick={(e)=>{e.stopPropagation();setSortButton(false);setSearchButton(false);setFilterButton(true)}} className="relative">
                         <div  className="flex px-[8px] py-[4px] text-black relative h-full  rounded transition duration-200 hover:bg-slate-signin hover:cursor-pointer">
                             <div className="flex flex-col justify-center h-full"><IoFilterOutline/></div> 
                             {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px] ">Filter</div>}
@@ -353,7 +360,7 @@ export function HeadNav({
                         <div className="flex flex-col justify-center h-full"><FaRegObjectUngroup/></div>
                         {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Group</div>}
                     </div>
-                    <div onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(true)}} className="relative">
+                    <div onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSearchButton(false);setSortButton(true)}} className="relative">
                         <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                             <div className="flex flex-col justify-center h-full"><BiSortAlt2/></div>
                             {isDesktop && <div className="flex flex-col justify-center h-full text-xs ml-[4px]">Sort</div>}
@@ -431,8 +438,29 @@ export function HeadNav({
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col justify-center text-black pr-[16px] opacity-70 hover:opacity-100 hover:cursor-pointer">
+            <div
+            onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(false);setSearchButton(true)}}
+            className="relative flex justify-center">
+                <div  className="flex flex-col justify-center text-black pr-[16px] opacity-70 hover:opacity-100 hover:cursor-pointer">
                 <PiMagnifyingGlass/>
+                </div>
+                {
+                    searchbutton && 
+                    <div className="absolute top-[30px] right-[12px] w-[297px]  bg-white border shadow-xl flex justify-between">
+                        <div className="p-[8px] m-[2px] flex flex-grow">
+                            <input
+                            onChange={(e)=>{handleSearchChange(e.target.value)}}
+                            className="text-xs w-full outline-none text-black font-semibold h-[18px]" placeholder="Find in view">
+                            </input>
+                        </div>
+                        <div onClick={(e)=>{e.stopPropagation();
+                        setSearchKey("")
+                        setSearchButton(false)}} 
+                        className="flex flex-col justify-center text-slate-400 px-[8px] text-sm hover:cursor-pointer hover:text-black">
+                            <RxCross1/>
+                        </div>
+                    </div>
+                }
             </div>
             
         </div>

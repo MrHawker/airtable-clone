@@ -25,7 +25,8 @@ export  function Entry({session}:{session:Session}) {
     const [sorts,setSorts] = useState<SortingState>([])
     const [columns, setColumns] = useState<ColumnDef<JsonValue>[]>([]);
     const [viewList,setViewList] = useState<string[]>([]);
-    
+    const [searchKey,setSearchKey] = useState("")
+
     useEffect(()=>{
         if (isViewsLoading) return;
         const content = views?.map((view)=>{
@@ -45,6 +46,7 @@ export  function Entry({session}:{session:Session}) {
             filters={filters} setFilters={setFilters} 
             sorts={sorts} setSorts={setSorts}
             columns={columns} setColumns={setColumns}
+            searchKey={searchKey} setSearchKey={setSearchKey}
             session={session}/>
             <PanelGroup className='fixed' direction='horizontal'>
                 <Panel minSize={15} maxSize={40}  defaultSize={25}>
@@ -57,6 +59,7 @@ export  function Entry({session}:{session:Session}) {
                     filters={filters} setFilters={setFilters} 
                     sorts={sorts} setSorts={setSorts}
                     columns={columns} setColumns={setColumns}
+                    searchKey={searchKey} setSearchKey={setSearchKey}
                     />
                 </div>
                 </Panel>

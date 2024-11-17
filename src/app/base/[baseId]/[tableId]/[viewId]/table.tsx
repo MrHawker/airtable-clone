@@ -23,6 +23,8 @@ export function Table({
     setFilters,
     sorts,
     setSorts,
+    searchKey,
+    setSearchKey,
     columns,
     setColumns
 }: {
@@ -30,6 +32,8 @@ export function Table({
     setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
     sorts: SortingState,
     setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
+    searchKey:string,
+    setSearchKey: React.Dispatch<React.SetStateAction<string>>,
     columns: ColumnDef<JsonValue>[],
     setColumns: React.Dispatch<React.SetStateAction<ColumnDef<JsonValue>[]>>
 }) {
@@ -105,37 +109,9 @@ export function Table({
             id: sort,
             desc: view?.sortOrder.at(index) === "Descending" ? true : false
         }));
-        console.log("SHIT")
         setFilters(content ?? []);
         setSorts(content2 ?? [])
     }, [view,params.viewId]);
-
-    // useEffect(() => {
-    //     if(!ref.current) return;
-    //     const filterId: string[] = [];
-    //     const filterVal: string[] = [];
-    //     const sortId: string[] = [];
-    //     const sortOrder: string[] = [];
-        
-    //     filters.forEach((filter) => {
-    //         if (filter.value == '' || String(filter.value) == '') return;
-    //         filterId.push(filter.id);
-    //         filterVal.push(String(filter.value));
-    //     });
-    //     sorts.forEach((sort) => {
-    //         if (sort.id === '') return;
-    //         sortId.push(sort.id);
-    //         sortOrder.push(sort.desc ? "Descending" : "Ascending");
-    //     });
-    //     updateView.mutate({
-    //         viewId: params.viewId,
-    //         filterBy: filterId,
-    //         filterVal: filterVal,
-    //         sortBy: sortId,
-    //         sortOrder: sortOrder
-    //     });
-    //     updateTableData(tableData.raw);
-    // }, [filters,sorts,params.viewId]);
 
     useEffect(() => {
         updateTableData(tableData.raw);
@@ -155,7 +131,6 @@ export function Table({
         }
     }, [tables]);
 
-    
     useEffect(() => {
         if (rows_data) {
             const content = rows_data.map((row) => ({ 
@@ -201,7 +176,6 @@ export function Table({
     });
 
     const updateRow = api.table.editRow.useMutation({});
-    const updateView = api.view.editView.useMutation({});
 
     const debouncedServerUpdate = useDebouncedCallback((rowId: number, newRow: JsonValue) => {
         updateRow.mutate({ rowId, row: newRow });
@@ -281,8 +255,12 @@ export function Table({
                             if (cell.column.columnDef.header === 'rowId') return null;
                             const inputId = `${cell.column.id}_${String(row.getValue('rowId'))}`;
                             return (
-                                <td className="bg-white border h-[30px] w-[180px]" key={cell.id}>
+                                <td 
+                                className={`bg-white border ${(searchKey!== "" && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'} h-[30px] w-[180px]`}
+                                
+                                key={cell.id}>
                                     <input
+                                        className={`w-full h-full ${(searchKey!== "" && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'}`}
                                         id={inputId}
                                         type="text"
                                         value={String(tableData.filtered[rowIndex]?.[cell.column.id as keyof object] ?? '')}
