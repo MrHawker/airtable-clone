@@ -267,13 +267,14 @@ export function Table({
                         {row.getVisibleCells().map((cell, cellIndex) => {
                             if (cell.column.columnDef.header === 'rowId') return null;
                             const inputId = `${cell.column.id}_${String(row.getValue('rowId'))}`;
+                            console.log(cell.getValue())
                             return (
                                 <td 
-                                className={`bg-white border ${(searchKey!== "" && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'} h-[30px] w-[180px]`}
+                                className={`bg-white border ${(searchKey!== "" &&  cell.getValue() !== undefined && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'} h-[30px] w-[180px]`}
                                 
                                 key={cell.id}>
                                     <input
-                                        className={`w-full h-full ${(searchKey!== "" && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'}`}
+                                        className={`w-full h-full ${(searchKey!== "" && cell.getValue() !== undefined && String(cell.getValue()).includes(searchKey)) ? 'bg-yellow-100' : 'bg-white'}`}
                                         id={inputId}
                                         type="text"
                                         value={String(tableData.filtered[rowIndex]?.[cell.column.id as keyof object] ?? '')}
