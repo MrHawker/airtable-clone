@@ -228,7 +228,7 @@ export const tableRouter = createTRPCRouter({
       sorts:z.array(sortSchema),
       limit: z.number().min(1).max(500).default(50),
       cursor: z.number().nullish(),
-      flip:z.boolean()
+      
     }))
     .query(async ({ ctx, input }) => {
       const fullData = await ctx.db.data.findMany({

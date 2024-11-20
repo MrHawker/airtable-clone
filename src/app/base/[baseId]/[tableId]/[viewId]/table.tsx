@@ -34,9 +34,10 @@ export function Table({
     setColumns: React.Dispatch<React.SetStateAction<ColumnDef<JsonValue>[]>>
 }) {
     const tableRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
     const previousFlatData = useRef<JsonValue[]>([]);
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
-    const [flip,setFlip] = useState(false)
+    
     const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId },
     );
 
@@ -49,8 +50,8 @@ export function Table({
     const [trueSorts,setTrueSorts] = useState<SortingState>([])
     const { data: rows_data, isLoading: isRowLoading,fetchNextPage,isFetching } = api.table.getRows.useInfiniteQuery(    
         { 
-            tableId: params.tableId,sorts:trueSorts,filters:trueFilters,flip,
-            limit:200
+            tableId: params.tableId,sorts:trueSorts,filters:trueFilters,
+            limit:100
         },
             {
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -202,7 +203,7 @@ export function Table({
 
     const updateRow = api.table.editRow.useMutation({
         onSuccess: async (updatedRow) =>{
-            await utils.table.invalidate();
+            //To do what now ?
         }
     });
 
@@ -246,7 +247,6 @@ export function Table({
         });
         if (searchKey.length === 0) {
             setTableData(mergedData);
-            return;
         }
         setTableData(
             mergedData.filter((row) => {
@@ -263,6 +263,7 @@ export function Table({
                 return false; 
             })
         );
+       
     }, [searchKey,flatData]);
     
     const table = useReactTable({
@@ -292,22 +293,29 @@ export function Table({
     useEffect(() => {
         fetchMoreOnBottomReached(tableRef.current)
     }, [fetchMoreOnBottomReached])
+
+    useEffect(()=>{
+        if(tableData.length < 100 && totalDBRowCount > totalFetched){
+            void fetchNextPage()
+        }
+    },[tableData])
     const rowVirtualizer = useVirtualizer({
         count: rows.length,
         estimateSize: () => 36,
         getScrollElement: () => tableRef.current,
         
         overscan: 5,
-      })
-
+    })
+    
+      
     return (
         <div
         ref={tableRef}
-       onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+        id="tableContainer"
+        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         className="h-full overflow-auto relative"
-        
         >
-            <table className="w-fit overflow-auto relative">
+            <table id="table" className="w-fit overflow-auto relative">
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -380,7 +388,7 @@ export function Table({
                                                 onBlur={async (e)=>{
                                                     if (e.target.value !== e.target.dataset.initialValue) {
                                                         await utils.table.invalidate()
-                                                        setFlip(!flip)
+                                                        
                                                     }
                                                 }}
                                                 className={`w-full h-full ${(searchKey!== "" && cell.getValue() !== undefined && String(cell.getValue()).toLowerCase().includes(searchKey.toLowerCase())) ? 'bg-yellow-100' : 'bg-white'}`}
