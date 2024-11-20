@@ -201,24 +201,17 @@ export function Table({
     });
 
     const updateRow = api.table.editRow.useMutation({
-        onSuccess:(updatedRow) =>{
+        onSuccess: (updatedRow) =>{
             //To do what
         }
     });
 
     const debouncedServerUpdate = useDebouncedCallback((rowId: number, newRow: JsonValue) => {
-        const updatedData = tableData.map((row) =>
-            (row as TableRow)?.rowId === rowId
-                ? newRow
-                : row
-        );
-        setTableData(updatedData);
         updateRow.mutate({ rowId, row: newRow });
     }, 300);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, rowId: number, columnId: string) => {
         const newValue = e.target.value;
-        
         const updatedRawData = tableData.map((row) => 
             (row as TableRow)?.rowId === rowId
                 ? { 
