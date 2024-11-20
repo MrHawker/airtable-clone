@@ -29,8 +29,8 @@ export const baseRouter = createTRPCRouter({
           data: {
             name: 'Table 1',
             base: { connect: { id: newBase.id } },
-            columns: ['Name', 'Age'],
-            columns_type: ['String', 'Int'],
+            columns: ['Name'],
+            columns_type: ['String'],
             views: {
               create: [], 
             },

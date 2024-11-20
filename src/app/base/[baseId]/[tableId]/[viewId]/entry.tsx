@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HeadNav } from './head_nav'
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
@@ -48,13 +48,15 @@ export  function Entry({session}:{session:Session}) {
             columns={columns} setColumns={setColumns}
             searchKey={searchKey} setSearchKey={setSearchKey}
             session={session}/>
-            <PanelGroup className='fixed' direction='horizontal'>
+            <PanelGroup className='fixed ' direction='horizontal'>
                 <Panel minSize={15} maxSize={40}  defaultSize={25}>
                     <SideNav sorts={sorts} setSorts={setSorts} filters={filters} setFilters={setFilters} viewList = {viewList} setViewList = {setViewList}/>
                 </Panel>
                 <PanelResizeHandle className="flex items-center justify-center border-slate-300 border ml-[5px]"/>
                 <Panel>
-                <div  className='h-[600px] w-full bg-slate-100 overflow-scroll relative'>
+                <div 
+                style={{ height: 'calc(100vh - 120px)' }}
+                className='w-full bg-slate-100 overflow-scroll relative'>
                     <Table 
                     filters={filters} setFilters={setFilters} 
                     sorts={sorts} setSorts={setSorts}

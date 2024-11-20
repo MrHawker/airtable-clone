@@ -43,7 +43,6 @@ export function Table({
     const { data: view, isLoading: isViewLoading } = api.view.getViewById.useQuery({ viewId: params.viewId }
     );
     
-    const utils = api.useUtils()
     const [tableData, setTableData] = useState<JsonValue[]>([]);
     const [trueFilters,setTrueFilters] = useState<ColumnFiltersState>([])
     const [trueSorts,setTrueSorts] = useState<SortingState>([])
@@ -53,7 +52,6 @@ export function Table({
             limit:200
         },
             {
-                staleTime:0,
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
                 refetchOnWindowFocus: false,
             }
@@ -90,7 +88,6 @@ export function Table({
     useEffect(() => {
         let flag = false;
         if (sorts.length == 0){
-            
             setTrueSorts([])
         }
         sorts.forEach((sort) => {
@@ -195,11 +192,11 @@ export function Table({
 
     const updateRow = api.table.editRow.useMutation({
         onSuccess:(updatedRow) =>{
-            //To do what
         }
     });
 
     const debouncedServerUpdate = useDebouncedCallback((rowId: number, newRow: JsonValue) => {
+        console.log(newRow)
         const updatedData = tableData.map((row) =>
             (row as TableRow)?.rowId === rowId
                 ? newRow

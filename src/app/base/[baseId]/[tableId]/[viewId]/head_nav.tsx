@@ -23,13 +23,12 @@ import { IoColorFillOutline } from "react-icons/io5";
 import { CiLineHeight } from "react-icons/ci";
 import { CiShare1 } from "react-icons/ci";
 import { PiMagnifyingGlass } from "react-icons/pi";
-import { useParams, useRouter } from "next/navigation";
+import { useParams} from "next/navigation";
 import { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
 import { useDebouncedCallback } from "use-debounce";
-
 
 export function HeadNav({
     open,
@@ -85,6 +84,18 @@ export function HeadNav({
         window.location.href = `/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`
         },
   });
+
+  const addbunch = api.table.addManyRows.useMutation({
+    onSuccess: async (data) => {
+        await utils.table.invalidate();
+    }
+  })
+  const handleAddBunch = (count:number) =>{
+    const columnsName = columns.map(col=>{
+        return String(col.header)
+    })
+    addbunch.mutate({count:count,tableId:params.tableId,columnsName:columnsName})
+  }
 
   const handleSearchChange = useDebouncedCallback((keyword:string) => {
         setSearchKey(keyword)
@@ -488,7 +499,6 @@ export function HeadNav({
                     </div>
                     <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                         <div className="flex flex-col justify-center h-full"><CiLineHeight/></div>
-                        
                     </div>
                     <div className="flex px-[8px] py-[4px] text-black  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                         <div className="flex flex-col justify-center h-full"><CiShare1/></div>
@@ -496,7 +506,12 @@ export function HeadNav({
                     </div>
                 </div>
             </div>
-            <div
+            <div className="flex">
+                <div onClick={()=>{handleAddBunch(20000)}} className="text-red-400 flex px-[8px] py-[4px] mr-5 font-bold  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
+                        <div className="flex flex-col justify-center h-full"><GoPlus/></div>
+                        {isDesktop && <div className=" flex flex-col justify-center h-full text-xs ml-[4px]">Add 20k</div>}
+                    </div>
+                <div
             onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(false);setSearchButton(true)}}
             className="relative flex justify-center">
                 <div  className="flex flex-col justify-center text-black pr-[16px] opacity-70 hover:opacity-100 hover:cursor-pointer">
@@ -520,6 +535,8 @@ export function HeadNav({
                     </div>
                 }
             </div>
+            </div>
+            
             
         </div>
     </header>

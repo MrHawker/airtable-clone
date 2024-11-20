@@ -11,7 +11,7 @@ export function TableList(){
     const params = useParams<{ baseId: string; tableId: string, viewId:string }>()
     
     const { data: tables, isLoading } = api.common.getFirstViewForTables.useQuery({baseId:params.baseId})
-    
+    const utils = api.useUtils()
     const router = useRouter()
     let exist = 0
     const l = tables?.length ?? 0
@@ -27,9 +27,10 @@ export function TableList(){
             )
           }else{
             return (
-              <div onClick={()=>
-              router.push(`/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`)
-              
+              <div onClick={async ()=>{
+                await utils.table.invalidate()
+                router.push(`/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`)
+              } 
               } key={index} className="flex">
                 <div  className="px-[12px] py-2 text-slate-200 font-thin flex justify-center shadow-sm hover:cursor-pointer">
                   <p className="font-medium text-xs mr-1">Table {index+1}</p>
