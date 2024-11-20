@@ -507,9 +507,9 @@ export function HeadNav({
                 </div>
             </div>
             <div className="flex">
-                <div onClick={()=>{handleAddBunch(5000)}} className="text-red-400 flex px-[8px] py-[4px] mr-5 font-bold  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
+                <div onClick={()=>{handleAddBunch(20000)}} className="text-red-400 flex px-[8px] py-[4px] mr-5 font-bold  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
                         <div className="flex flex-col justify-center h-full"><GoPlus/></div>
-                        {isDesktop && <div className=" flex flex-col justify-center h-full text-xs ml-[4px]">Add 5k</div>}
+                        {isDesktop && <div className=" flex flex-col justify-center h-full text-xs ml-[4px]">Add 20k</div>}
                     </div>
                 <div
             onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(false);setSearchButton(true)}}
