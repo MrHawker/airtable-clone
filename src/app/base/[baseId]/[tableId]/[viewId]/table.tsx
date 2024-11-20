@@ -8,7 +8,7 @@ import { FiPlus } from "react-icons/fi";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { useDebouncedCallback } from 'use-debounce';
 import { useVirtualizer } from '@tanstack/react-virtual'
-
+import { applyFilter } from "~/server/api/routers/lib";
 interface TableRow {
     rowId: string |number;  
     [key: string]: JsonValue;
@@ -53,9 +53,7 @@ export function Table({
             limit:200
         },
             {
-                
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
-                
             }
         );
     
@@ -96,10 +94,9 @@ export function Table({
         });
         if(!flag && sorts.length > 0) return;
         setTableData([])
-        void utils.table.invalidate().then(()=>{
+        // void utils.table.invalidate().then(()=>{
         if (sorts.length == 0){
             setTrueSorts([])
-            
         }else{
             setTrueSorts(
                 sorts
@@ -112,7 +109,7 @@ export function Table({
                     .filter((sort)=> sort !== undefined) 
             );
         }
-        })
+        // })
         
     }, [sorts]);
 
@@ -126,7 +123,7 @@ export function Table({
         });
         if(!flag && filters.length > 0) return;
         setTableData([])
-        void utils.table.invalidate().then(()=>{
+        // void utils.table.invalidate().then(()=>{
             if (filters.length == 0){
                 setTrueFilters([])
             }
@@ -143,7 +140,7 @@ export function Table({
                         .filter((filter) => filter !== undefined) 
                 );
             }
-        })
+        // })
         
     }, [filters]);
 
