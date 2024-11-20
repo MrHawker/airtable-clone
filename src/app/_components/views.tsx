@@ -26,40 +26,11 @@ export function Views(
 ){
     const router = useRouter()
     const util = api.useUtils()
-    const updateView = api.view.editView.useMutation({
-        onSuccess: async () =>{
-            setTimeout(()=>{
-                //nothing to see here
-            },300)
-            await util.invalidate()
-        }
-    });
 
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
 
-    const handleViewChange = (viewId: string) => {
-        const filterId: string[] = [];
-        const filterVal: string[] = [];
-        const sortId: string[] = [];
-        const sortOrder: string[] = [];
-        filters.forEach((filter) => {
-            if (filter.value == '' || String(filter.value) == '') return;
-            filterId.push(filter.id);
-            filterVal.push(String(filter.value));
-        });
-        sorts.forEach((sort) => {
-            if (sort.id === '') return;
-            sortId.push(sort.id);
-            sortOrder.push(sort.desc ? "Descending" : "Ascending");
-        });
-        updateView.mutate({
-            viewId: params.viewId,
-            filterBy: filterId,
-            filterVal: filterVal,
-            sortBy: sortId,
-            sortOrder: sortOrder
-        });
-        
+    const handleViewChange = async(viewId: string) => {
+        await util.invalidate()
         router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
         
     };

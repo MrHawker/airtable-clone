@@ -53,9 +53,9 @@ export function Table({
             limit:200
         },
             {
-                staleTime:0,
+                
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
-                refetchOnWindowFocus: false,
+                
             }
         );
     
@@ -89,17 +89,18 @@ export function Table({
 
     useEffect(() => {
         let flag = false;
-        if (sorts.length == 0){
-            
-            setTrueSorts([])
-        }
         sorts.forEach((sort) => {
             if (sort.id.length > 0) {
                 flag = true;
             }
         });
-    
-        if (flag) {
+        if(!flag && sorts.length > 0) return;
+        setTableData([])
+        void utils.table.invalidate().then(()=>{
+        if (sorts.length == 0){
+            setTrueSorts([])
+            
+        }else{
             setTrueSorts(
                 sorts
                     .map((sort) => {
@@ -111,30 +112,39 @@ export function Table({
                     .filter((sort)=> sort !== undefined) 
             );
         }
+        })
+        
     }, [sorts]);
 
     useEffect(() => {
         let flag = false;
-        if (filters.length == 0){
-            setTrueFilters([])
-        }
+        
         filters.forEach((filter) => {
             if (filter.id.length > 0 && String(filter.value).length > 0) {
                 flag = true;
             }
         });
-        if (flag) {
-            setTrueFilters(
-                filters
-                    .map((filter) => {
-                        if (filter.id.length > 0) {
-                            return filter;
-                        }
-                        return undefined;
-                    })
-                    .filter((filter) => filter !== undefined) 
-            );
-        }
+        if(!flag && filters.length > 0) return;
+        setTableData([])
+        void utils.table.invalidate().then(()=>{
+            if (filters.length == 0){
+                setTrueFilters([])
+            }
+            
+            else{
+                setTrueFilters(
+                    filters
+                        .map((filter) => {
+                            if (filter.id.length > 0) {
+                                return filter;
+                            }
+                            return undefined;
+                        })
+                        .filter((filter) => filter !== undefined) 
+                );
+            }
+        })
+        
     }, [filters]);
 
     const flatData = useMemo(
@@ -227,21 +237,29 @@ export function Table({
             debouncedServerUpdate(rowId, updatedRow);
         }
     };
-    
     useEffect(() => {
+        const fetchData = async () => {
+            if (totalFetched < totalDBRowCount && !isFetching) {
+                await fetchNextPage(); 
+            }
+        };
+        void fetchData();
+    }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
+
+    useEffect(() => {
+        const tableDataMap = new Map(
+            tableData.map(row => [(row as TableRow)?.rowId, row])
+        );
+        const mergedData = flatData.map(row => {
+            const existingRow = tableDataMap.get((row as TableRow)?.rowId);
+            return existingRow ?? row;
+        });
         if (searchKey.length === 0) {
-            const tableDataMap = new Map(
-                tableData.map(row => [(row as TableRow)?.rowId, row])
-            );
-            const mergedData = flatData.map(row => {
-                const existingRow = tableDataMap.get((row as TableRow)?.rowId);
-                return existingRow ?? row;
-            });
             setTableData(mergedData);
             return;
         }
         setTableData(
-            tableData.filter((row) => {
+            mergedData.filter((row) => {
                 if(row == undefined) return false
                 for (const col of columns) {
                     if(String(col.header) === "rowId"){
@@ -265,30 +283,11 @@ export function Table({
         manualSorting:true,
     });
     const { rows } = table.getRowModel()
-    const fetchMoreOnBottomReached = useCallback(
-        (containerRefElement?: HTMLDivElement | null) => {
-          if (containerRefElement) {
-            const { scrollHeight, scrollTop, clientHeight } = containerRefElement
-            
-            if (
-              scrollHeight - scrollTop - clientHeight < 500 &&
-              !isFetching &&
-              totalFetched < totalDBRowCount
-            ) {
-              void fetchNextPage()
-            }
-          }
-        },
-        [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
-      )
-    useEffect(() => {
-        fetchMoreOnBottomReached(tableRef.current)
-    }, [fetchMoreOnBottomReached])
+    
     const rowVirtualizer = useVirtualizer({
         count: rows.length,
         estimateSize: () => 36,
         getScrollElement: () => tableRef.current,
-        
         
         overscan: 5,
       })
@@ -296,7 +295,7 @@ export function Table({
     return (
         <div
         ref={tableRef}
-        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+       
         className="h-full overflow-auto relative"
         
         >
