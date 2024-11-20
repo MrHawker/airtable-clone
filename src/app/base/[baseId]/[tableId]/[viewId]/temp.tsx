@@ -8,7 +8,7 @@
 // import { JsonValue } from "@prisma/client/runtime/library";
 // import { useDebouncedCallback } from 'use-debounce';
 // import { useVirtualizer } from '@tanstack/react-virtual'
-
+// import { applyFilter } from "~/server/api/routers/lib";
 // interface TableRow {
 //     rowId: string |number;  
 //     [key: string]: JsonValue;
@@ -36,7 +36,7 @@
 //     const tableRef = useRef<HTMLDivElement>(null)
 //     const previousFlatData = useRef<JsonValue[]>([]);
 //     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
-
+//     const [flip,setFlip] = useState(false)
 //     const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId },
 //     );
 
@@ -49,13 +49,11 @@
 //     const [trueSorts,setTrueSorts] = useState<SortingState>([])
 //     const { data: rows_data, isLoading: isRowLoading,fetchNextPage,isFetching } = api.table.getRows.useInfiniteQuery(    
 //         { 
-//             tableId: params.tableId,sorts:trueSorts,filters:trueFilters,
+//             tableId: params.tableId,sorts:trueSorts,filters:trueFilters,flip,
 //             limit:200
 //         },
 //             {
-                
 //                 getNextPageParam: (lastPage) => lastPage.nextCursor,
-                
 //             }
 //         );
     
@@ -96,10 +94,9 @@
 //         });
 //         if(!flag && sorts.length > 0) return;
 //         setTableData([])
-//         utils.table.invalidate().then(()=>{
+//         // void utils.table.invalidate().then(()=>{
 //         if (sorts.length == 0){
 //             setTrueSorts([])
-            
 //         }else{
 //             setTrueSorts(
 //                 sorts
@@ -112,7 +109,7 @@
 //                     .filter((sort)=> sort !== undefined) 
 //             );
 //         }
-//         })
+//         // })
         
 //     }, [sorts]);
 
@@ -126,7 +123,7 @@
 //         });
 //         if(!flag && filters.length > 0) return;
 //         setTableData([])
-//         utils.table.invalidate().then(()=>{
+//         // void utils.table.invalidate().then(()=>{
 //             if (filters.length == 0){
 //                 setTrueFilters([])
 //             }
@@ -143,7 +140,7 @@
 //                         .filter((filter) => filter !== undefined) 
 //                 );
 //             }
-//         })
+//         // })
         
 //     }, [filters]);
 
@@ -204,24 +201,20 @@
 //     });
 
 //     const updateRow = api.table.editRow.useMutation({
-//         onSuccess:(updatedRow) =>{
-//             //To do what
+//         onSuccess: async (updatedRow) =>{
+//             // await utils.table.invalidate();
+//             // setTimeout(() => {
+//             //     setFlip(!flip);
+//             // }, 300);
 //         }
 //     });
 
 //     const debouncedServerUpdate = useDebouncedCallback((rowId: number, newRow: JsonValue) => {
-//         const updatedData = tableData.map((row) =>
-//             (row as TableRow)?.rowId === rowId
-//                 ? newRow
-//                 : row
-//         );
-//         setTableData(updatedData);
 //         updateRow.mutate({ rowId, row: newRow });
 //     }, 300);
 
 //     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, rowId: number, columnId: string) => {
 //         const newValue = e.target.value;
-        
 //         const updatedRawData = tableData.map((row) => 
 //             (row as TableRow)?.rowId === rowId
 //                 ? { 
@@ -237,14 +230,14 @@
 //             debouncedServerUpdate(rowId, updatedRow);
 //         }
 //     };
-//     useEffect(() => {
-//         const fetchData = async () => {
-//             if (totalFetched < totalDBRowCount && !isFetching) {
-//                 await fetchNextPage(); 
-//             }
-//         };
-//         fetchData();
-//     }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
+//     // useEffect(() => {
+//     //     const fetchData = async () => {
+//     //         if (totalFetched < totalDBRowCount && !isFetching) {
+//     //             await fetchNextPage(); 
+//     //         }
+//     //     };
+//     //     void fetchData();
+//     // }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
 
 //     useEffect(() => {
 //         const tableDataMap = new Map(
@@ -258,7 +251,6 @@
 //             setTableData(mergedData);
 //             return;
 //         }
-        
 //         setTableData(
 //             mergedData.filter((row) => {
 //                 if(row == undefined) return false
@@ -284,25 +276,25 @@
 //         manualSorting:true,
 //     });
 //     const { rows } = table.getRowModel()
-//     // const fetchMoreOnBottomReached = useCallback(
-//     //     (containerRefElement?: HTMLDivElement | null) => {
-//     //       if (containerRefElement) {
-//     //         const { scrollHeight, scrollTop, clientHeight } = containerRefElement
+//     const fetchMoreOnBottomReached = useCallback(
+//         (containerRefElement?: HTMLDivElement | null) => {
+//           if (containerRefElement) {
+//             const { scrollHeight, scrollTop, clientHeight } = containerRefElement
             
-//     //         if (
-//     //           scrollHeight - scrollTop - clientHeight < 500 &&
-//     //           !isFetching &&
-//     //           totalFetched < totalDBRowCount
-//     //         ) {
-//     //           void fetchNextPage()
-//     //         }
-//     //       }
-//     //     },
-//     //     [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
-//     //   )
-//     // useEffect(() => {
-//     //     fetchMoreOnBottomReached(tableRef.current)
-//     // }, [fetchMoreOnBottomReached])
+//             if (
+//               scrollHeight - scrollTop - clientHeight < 500 &&
+//               !isFetching &&
+//               totalFetched < totalDBRowCount
+//             ) {
+//               void fetchNextPage()
+//             }
+//           }
+//         },
+//         [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+//       )
+//     useEffect(() => {
+//         fetchMoreOnBottomReached(tableRef.current)
+//     }, [fetchMoreOnBottomReached])
 //     const rowVirtualizer = useVirtualizer({
 //         count: rows.length,
 //         estimateSize: () => 36,
@@ -314,7 +306,7 @@
 //     return (
 //         <div
 //         ref={tableRef}
-//         // onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+//        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
 //         className="h-full overflow-auto relative"
         
 //         >
@@ -385,6 +377,15 @@
 //                                         key={cell.id}
 //                                         >
 //                                             <input
+//                                                 onFocus={(e) => {
+//                                                     e.target.dataset.initialValue = e.target.value;
+//                                                 }}
+//                                                 onBlur={async (e)=>{
+//                                                     if (e.target.value !== e.target.dataset.initialValue) {
+//                                                         await utils.table.invalidate()
+//                                                         setFlip(!flip)
+//                                                     }
+//                                                 }}
 //                                                 className={`w-full h-full ${(searchKey!== "" && cell.getValue() !== undefined && String(cell.getValue()).toLowerCase().includes(searchKey.toLowerCase())) ? 'bg-yellow-100' : 'bg-white'}`}
 //                                                 id={inputId}
 //                                                 type="text"

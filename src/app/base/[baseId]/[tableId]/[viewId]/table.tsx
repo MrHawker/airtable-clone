@@ -36,7 +36,7 @@ export function Table({
     const tableRef = useRef<HTMLDivElement>(null)
     const previousFlatData = useRef<JsonValue[]>([]);
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
-
+    const [flip,setFlip] = useState(false)
     const { data: tables, isLoading: isTableLoading } = api.table.getTableById.useQuery({ tableId: params.tableId },
     );
 
@@ -49,7 +49,7 @@ export function Table({
     const [trueSorts,setTrueSorts] = useState<SortingState>([])
     const { data: rows_data, isLoading: isRowLoading,fetchNextPage,isFetching } = api.table.getRows.useInfiniteQuery(    
         { 
-            tableId: params.tableId,sorts:trueSorts,filters:trueFilters,
+            tableId: params.tableId,sorts:trueSorts,filters:trueFilters,flip,
             limit:200
         },
             {
@@ -201,8 +201,8 @@ export function Table({
     });
 
     const updateRow = api.table.editRow.useMutation({
-        onSuccess: (updatedRow) =>{
-            //To do what
+        onSuccess: async (updatedRow) =>{
+            await utils.table.invalidate();
         }
     });
 
@@ -227,14 +227,14 @@ export function Table({
             debouncedServerUpdate(rowId, updatedRow);
         }
     };
-    useEffect(() => {
-        const fetchData = async () => {
-            if (totalFetched < totalDBRowCount && !isFetching) {
-                await fetchNextPage(); 
-            }
-        };
-        void fetchData();
-    }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         if (totalFetched < totalDBRowCount && !isFetching) {
+    //             await fetchNextPage(); 
+    //         }
+    //     };
+    //     void fetchData();
+    // }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
 
     useEffect(() => {
         const tableDataMap = new Map(
@@ -273,7 +273,25 @@ export function Table({
         manualSorting:true,
     });
     const { rows } = table.getRowModel()
-    
+    const fetchMoreOnBottomReached = useCallback(
+        (containerRefElement?: HTMLDivElement | null) => {
+          if (containerRefElement) {
+            const { scrollHeight, scrollTop, clientHeight } = containerRefElement
+            
+            if (
+              scrollHeight - scrollTop - clientHeight < 500 &&
+              !isFetching &&
+              totalFetched < totalDBRowCount
+            ) {
+              void fetchNextPage()
+            }
+          }
+        },
+        [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+      )
+    useEffect(() => {
+        fetchMoreOnBottomReached(tableRef.current)
+    }, [fetchMoreOnBottomReached])
     const rowVirtualizer = useVirtualizer({
         count: rows.length,
         estimateSize: () => 36,
@@ -285,7 +303,7 @@ export function Table({
     return (
         <div
         ref={tableRef}
-       
+       onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         className="h-full overflow-auto relative"
         
         >
@@ -356,6 +374,15 @@ export function Table({
                                         key={cell.id}
                                         >
                                             <input
+                                                onFocus={(e) => {
+                                                    e.target.dataset.initialValue = e.target.value;
+                                                }}
+                                                onBlur={async (e)=>{
+                                                    if (e.target.value !== e.target.dataset.initialValue) {
+                                                        await utils.table.invalidate()
+                                                        setFlip(!flip)
+                                                    }
+                                                }}
                                                 className={`w-full h-full ${(searchKey!== "" && cell.getValue() !== undefined && String(cell.getValue()).toLowerCase().includes(searchKey.toLowerCase())) ? 'bg-yellow-100' : 'bg-white'}`}
                                                 id={inputId}
                                                 type="text"
