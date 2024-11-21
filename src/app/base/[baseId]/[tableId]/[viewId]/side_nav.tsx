@@ -60,7 +60,7 @@ export function SideNav(
                         <GoGear/>
                     </div>
                 </div>
-                <Views sorts={sorts} setSorts={setSorts} filters={filters} setFilters={setFilters} viewList={viewList} setViewList={setViewList}/>
+                <Views viewList={viewList} />
             </div>
             <div>
                 <hr></hr>

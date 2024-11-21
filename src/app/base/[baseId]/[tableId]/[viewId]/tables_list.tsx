@@ -28,8 +28,8 @@ export function TableList(){
           }else{
             return (
               <div onClick={async ()=>{
-                await utils.table.invalidate()
-                router.push(`/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`)
+                
+                window.location.href = `/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`;
               } 
               } key={index} className="flex">
                 <div  className="px-[12px] py-2 text-slate-200 font-thin flex justify-center shadow-sm hover:cursor-pointer">

@@ -9,19 +9,11 @@ import { api } from "~/trpc/react";
 export function Views(
     {
         viewList,
-        setViewList,
-        filters,
-        setFilters,
-        sorts,
-        setSorts,
+        
     }:
     {
         viewList:string[],
-        setViewList: React.Dispatch<React.SetStateAction<string[]>>,
-        filters: ColumnFiltersState,
-        setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
-        sorts: SortingState,
-        setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
+        
     }
 ){
     const router = useRouter()
@@ -30,9 +22,7 @@ export function Views(
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
 
     const handleViewChange = async(viewId: string) => {
-        await util.invalidate()
-        router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
-        
+        window.location.href = `/base/${params.baseId}/${params.tableId}/${viewId}`;
     };
     return(
         <div className="flex flex-col flex-grow  pt-[8px] py-[12px] space-y-2">

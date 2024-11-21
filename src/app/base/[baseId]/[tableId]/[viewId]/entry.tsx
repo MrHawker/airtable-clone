@@ -35,9 +35,7 @@ export  function Entry({session}:{session:Session}) {
         setViewList(content ?? [])
     },[views])
 
-    if(isViewsLoading){
-        return <div>Loading...</div>
-    }
+    
 
     return (
         <main className="relative" onClick={()=>{setOpen(false)}}>

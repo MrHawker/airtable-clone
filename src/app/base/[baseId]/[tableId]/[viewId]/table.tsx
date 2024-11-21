@@ -26,6 +26,7 @@ export function Table({
 }: {
     filters: ColumnFiltersState,
     setFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>,
+    
     sorts: SortingState,
     setSorts: React.Dispatch<React.SetStateAction<SortingState>>,
     searchKey:string,
@@ -34,7 +35,6 @@ export function Table({
     setColumns: React.Dispatch<React.SetStateAction<ColumnDef<JsonValue>[]>>
 }) {
     const tableRef = useRef<HTMLDivElement>(null)
-    const containerRef = useRef<HTMLDivElement>(null)
     const previousFlatData = useRef<JsonValue[]>([]);
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
     
@@ -55,6 +55,8 @@ export function Table({
         },
             {
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
+                refetchOnWindowFocus:false,
+                staleTime:0
             }
         );
     
@@ -164,6 +166,7 @@ export function Table({
     }, [flatData]);
 
     useEffect(()=>{
+        
         setTableData(flatData)
     },[trueFilters,trueSorts])
 
@@ -187,6 +190,7 @@ export function Table({
 
     const addColumn = api.table.addColumn.useMutation({
         onSuccess: (newTable) => {
+            
             const newColumn = {
                 accessorKey: newTable.newTable.columns.at(-1) ?? 'Column',
                 header: newTable.newTable.columns.at(-1) ?? 'Column',
@@ -203,7 +207,7 @@ export function Table({
 
     const updateRow = api.table.editRow.useMutation({
         onSuccess: async (updatedRow) =>{
-            //To do what now ?
+            await utils.table.invalidate()
         }
     });
 
@@ -228,14 +232,6 @@ export function Table({
             debouncedServerUpdate(rowId, updatedRow);
         }
     };
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         if (totalFetched < totalDBRowCount && !isFetching) {
-    //             await fetchNextPage(); 
-    //         }
-    //     };
-    //     void fetchData();
-    // }, [isFetching, totalFetched, totalDBRowCount, fetchNextPage]);
 
     useEffect(() => {
         const tableDataMap = new Map(
@@ -247,6 +243,7 @@ export function Table({
         });
         if (searchKey.length === 0) {
             setTableData(mergedData);
+            return;
         }
         setTableData(
             mergedData.filter((row) => {
@@ -273,6 +270,7 @@ export function Table({
         manualFiltering:true,
         manualSorting:true,
     });
+
     const { rows } = table.getRowModel()
     const fetchMoreOnBottomReached = useCallback(
         (containerRefElement?: HTMLDivElement | null) => {
@@ -299,6 +297,7 @@ export function Table({
             void fetchNextPage()
         }
     },[tableData])
+
     const rowVirtualizer = useVirtualizer({
         count: rows.length,
         estimateSize: () => 36,
