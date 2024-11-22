@@ -23,34 +23,34 @@ export function Dashboard({session}:{session:Session}){
                 <DashBoardSideNav menuExtended={menuExtended} setMenuExtended={setMenuExtended} session={session}/>
                 <div className="w-full min-h-screen py-[32px] px-[48px] bg-slate-50">
                     <h1 className="text-3xl mb-[24px] font-bold">Home</h1>
-                    <div className="w-full flex gap-2 flex-wrap mb-6">
-                        <div className="p-[16px] border-2 bg-white rounded-md flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
+                    <div className="w-full flex gap-3 flex-wrap mb-6">
+                        <div className="p-[16px] border bg-white rounded-lg flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
                             <h1 className="text-md font-medium flex mb-2">
                                 <CiStar strokeWidth={1} className="mt-1 mr-2 text-pink-500 "/>
                                 Start with AI
                             </h1>
-                            <p className="text-xs text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
+                            <p className="text-xs font-light text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
                         </div>
-                        <div className="p-[16px] border-2 bg-white rounded-md flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
+                        <div className="p-[16px] border bg-white rounded-lg flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
                             <h1 className="text-md font-medium flex mb-2">
                                 <RxGrid strokeWidth={1} className="mt-1 mr-2 text-purple-500 "/>
                                 Start with templates
                             </h1>
-                            <p className="text-xs text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
+                            <p className="text-xs font-light text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
                         </div>
-                        <div className="p-[16px] border-2 bg-white rounded-md flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
+                        <div className="p-[16px] border bg-white rounded-lg flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
                             <h1 className="text-md font-medium flex mb-2">
                                 <IoIosArrowRoundUp style={{fontSize:'24px'}} strokeWidth={1} className="mr-2 text-green-500 "/>
                                 Quickly upload
                             </h1>
-                            <p className="text-xs text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
+                            <p className="text-xs font-light text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
                         </div>
-                        <div className="p-[16px] border-2 bg-white rounded-md flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
+                        <div className="p-[16px] border bg-white rounded-lg flex-grow lg:flex-1 lg:basis-[calc(25%-1rem)] hover:shadow-md hover:cursor-pointer">
                             <h1 className="text-md font-medium flex mb-2">
                                 <FiTable strokeWidth={1} className="mt-1 mr-2 text-blue-600 "/>
                                 Start from scratch
                             </h1>
-                            <p className="text-xs text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
+                            <p className="text-xs font-light text-slate-600">Turn your process into an app with data and interfaces using AI.</p>
                         </div>
                     </div>
                     <div className="flex justify-between pb-[20px]">
@@ -78,7 +78,7 @@ export function Dashboard({session}:{session:Session}){
             
             {open &&
             
-            <div className="fixed top-12 right-0 z-40 p-[12px] bg-white rounded-md shadow-md border-2 w-72">
+            <div className="fixed top-12 right-0 z-40 p-[12px] bg-white rounded-md shadow-md border w-72">
                 <div className="pt-[8px] pb-[16px] mb-[8px] mx-[8px]">
                     <p className="text-sm font-semibold">
                         {session.user.name}

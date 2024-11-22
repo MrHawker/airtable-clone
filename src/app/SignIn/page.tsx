@@ -18,9 +18,9 @@ export default function Page(){
             width: "100%",
             height: "100vh"
         }}
-        className="lg:pb-8"
+        className="lg:pb-8 flex justify-center"
         >
-            <div className="h-full w-full px-0 lg:px-48 xl:px-[440px] lg:py-[12px]">
+            <div className="h-full w-full lg:w-[45%] px-0  lg:py-[12px]">
                 <div className="bg-white lg:rounded-md h-full ">
                     <div className="bg-slate-signin lg:flex justify-center py-8 px-4 lg:mt-6 rounded-t-md hidden">
                         <button className="flex">

@@ -22,7 +22,9 @@ export default {
         'deeper-brown': '#6f3a29',
         'soft-blue': '#d6f2ff',
         'hover-view-blue': '#c7ecfc',
-        'header-bg': '#f5f5f5'
+        'header-bg': '#f5f5f5',
+        'header-background':'#f1f6ff',
+        'table-background': '#f7f7f7'
       },
       boxShadow: {
         'inner-strong': 'inset 0 1px 1px rgba(0, 0, 0, 0.25)', 
