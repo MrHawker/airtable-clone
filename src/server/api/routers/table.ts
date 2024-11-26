@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { faker } from '@faker-js/faker'; 
 import { applyFilter } from "./lib";
+import { createId } from '@paralleldrive/cuid2';
 
 import {
   createTRPCRouter,
   protectedProcedure,
   
 } from "~/server/api/trpc";
-import { RowData } from "@tanstack/react-table";
+
 import { JsonValue } from "@prisma/client/runtime/library";
 
 const filterSchema = z.object({
@@ -35,8 +36,9 @@ export const tableRouter = createTRPCRouter({
           data: {
             name: input.name,
             base: { connect: { id: input.baseId } },
-            columns: ['Name'],
-            columns_type: ['String'],
+            columns: [],
+            columns_type: [],
+            columns_id: [],
             views: {
               create: [], 
             },
@@ -45,6 +47,7 @@ export const tableRouter = createTRPCRouter({
             },
           },
         });
+
 
         const newView = await prisma.view.create({
           data: {
@@ -56,7 +59,6 @@ export const tableRouter = createTRPCRouter({
             filterVal: [],
           },
         });
-  
         return { newTable:newTable, newView:newView };
       });
   
@@ -68,6 +70,7 @@ export const tableRouter = createTRPCRouter({
         z.object({
           tableId: z.string(),
           row: z.object({}),
+          id: z.string(),
         })
       )
     .mutation(async ({ ctx, input }) => {
@@ -75,8 +78,10 @@ export const tableRouter = createTRPCRouter({
         
         const newRow = await prisma.data.create({
           data: {
+            id: input.id,
             table: { connect: { id: input.tableId } },
-            values: input.row
+            values: input.row,
+            
           },
         });
   
@@ -110,7 +115,8 @@ export const tableRouter = createTRPCRouter({
           });
           return {
             tableId: input.tableId,
-            values: valuesToAdd
+            values: valuesToAdd,
+            id: createId() 
           }
         });
 
@@ -127,7 +133,7 @@ export const tableRouter = createTRPCRouter({
     editRow: protectedProcedure
     .input(
         z.object({
-          rowId: z.number(),
+          rowId: z.string(),
           row: z.any(),
         })
       )
@@ -148,6 +154,7 @@ export const tableRouter = createTRPCRouter({
   
       return result;
     }),
+
     addColumn: protectedProcedure
     .input(
       z.object({
@@ -170,6 +177,9 @@ export const tableRouter = createTRPCRouter({
             },
             columns_type: {
               push: columnType, 
+            },
+            columns_id: {
+              push: createId(),
             },
           },
         });
@@ -237,7 +247,7 @@ export const tableRouter = createTRPCRouter({
         },
         
         orderBy: {
-          id: 'asc',
+          numId: 'asc',
         },
       });
   

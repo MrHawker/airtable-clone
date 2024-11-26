@@ -28,15 +28,15 @@ export function TableList(){
           }else{
             return (
               <div onClick={async ()=>{
-                
-                window.location.href= `/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`;
+                await utils.invalidate()
+                router.push(`/base/${params.baseId}/${table.id}/${table.views.at(0)?.id}`);
               } 
               } key={index} className="flex">
                 <div  className="px-[12px] py-[7px] text-slate-200 font-thin flex justify-center shadow-sm hover:cursor-pointer">
                   <p className="font-medium text-[12px] mr-1">Table {index+1}</p>
                   <div className="flex flex-col justify-center"><RiArrowDownSLine /></div>
                 </div>
-                <div className="w-[0.5px] bg-gray-400 opacity-30" style={{height: '20px' }}></div>
+                <div className="w-[0.5px] bg-gray-400 opacity-30 mt-[6px]" style={{height: '20px' }}></div>
               </div>
             )
           }

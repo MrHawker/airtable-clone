@@ -23,7 +23,7 @@ export  function Entry({session}:{session:Session}) {
     const [columns, setColumns] = useState<ColumnDef<JsonValue>[]>([]);
     const [viewList,setViewList] = useState<string[]>([]);
     const [searchKey,setSearchKey] = useState("")
-
+    const [isLoading,setIsLoading] = useState(false)
     useEffect(()=>{
         if (isViewsLoading) return;
         const content = views?.map((view)=>{
@@ -43,6 +43,7 @@ export  function Entry({session}:{session:Session}) {
             sorts={sorts} setSorts={setSorts}
             columns={columns} setColumns={setColumns}
             searchKey={searchKey} setSearchKey={setSearchKey}
+            isLoading={isLoading} setIsLoading={setIsLoading}
             session={session}/>
             {
                 openView ? 
@@ -57,6 +58,7 @@ export  function Entry({session}:{session:Session}) {
                 style={{ height: 'calc(100vh - 120px)' }}
                 className='w-full bg-slate-100 overflow-scroll relative'>
                     <Table 
+                    isLoading={isLoading} setIsLoading={setIsLoading}
                     filters={filters} setFilters={setFilters} 
                     sorts={sorts} setSorts={setSorts}
                     columns={columns} setColumns={setColumns}
@@ -72,6 +74,7 @@ export  function Entry({session}:{session:Session}) {
                 style={{ height: 'calc(100vh - 120px)' }}
                 className='w-full bg-slate-100 overflow-scroll relative'>
                     <Table 
+                    isLoading={isLoading} setIsLoading={setIsLoading}
                     filters={filters} setFilters={setFilters} 
                     sorts={sorts} setSorts={setSorts}
                     columns={columns} setColumns={setColumns}

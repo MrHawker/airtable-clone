@@ -32,6 +32,7 @@ model Table {
     baseId           String
     columns          String[]
     columns_type     String[]
+    columns_id       String[]
 
     views     View[]
     data      Data[]
@@ -55,7 +56,8 @@ model View {
 }
 
 model Data {
-    id           Int       @id @default(autoincrement())      
+    id           String    @id
+    numId        Int       @default(autoincrement())
     table        Table     @relation(fields: [tableId], references: [id])
     tableId      String
     values       Json

@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
 import {
@@ -29,8 +30,9 @@ export const baseRouter = createTRPCRouter({
           data: {
             name: 'Table 1',
             base: { connect: { id: newBase.id } },
-            columns: ['Name'],
-            columns_type: ['String'],
+            columns: [],
+            columns_type: [],
+            columns_id: [],
             views: {
               create: [], 
             },

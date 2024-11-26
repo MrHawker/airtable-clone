@@ -43,11 +43,15 @@ export function HeadNav({
     setSearchKey,
     columns,
     setColumns,
+    isLoading,
+    setIsLoading,
     session
     }:
     {
     open:boolean,
     setOpen:React.Dispatch<React.SetStateAction<boolean>>,
+    isLoading:boolean,
+    setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
     openView:boolean,
     setOpenView:React.Dispatch<React.SetStateAction<boolean>>,
     filters:ColumnFiltersState,
@@ -219,7 +223,7 @@ export function HeadNav({
   }
 
   return (
-    <header onClick={()=>{setFilterButton(false);setSortButton(false)}} className="sticky top-0  border-b-2 bg-card-brown z-30  text-white min-w-full">
+    <header onClick={()=>{setFilterButton(false);setSortButton(false)}} className="sticky top-0  border-slate-300 border bg-card-brown z-30  text-white min-w-full">
         <nav className="flex justify-between items-center py-[12px] overflow-hidden pl-[20px] pr-[16px] h-[56px]">
             <div className="flex items-center ">
                 <button className="flex ml-2 lg:ml-0 mr-2 mt-1">
@@ -513,15 +517,27 @@ export function HeadNav({
                 </div>
             </div>
             <div className="flex">
-                <div onClick={()=>{handleAddBunch(20000)}} className="text-red-400 flex px-[8px] py-[4px] mr-5 font-bold  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
-                        <div className="flex flex-col justify-center h-full"><GoPlus/></div>
-                        {isDesktop && <div className=" flex flex-col justify-center h-full text-xs ml-[4px]">Add 20k</div>}
+                {
+                    isLoading && 
+                    <div 
+                    className="text-black font-bold text-xs flex flex-col justify-center mr-2 animate-pulse opacity-20">
+                    <div className="flex">
+                    <svg className="w-[16px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                    <path style={{ transformOrigin: "center" }} fill="#FF156D" stroke="#FF156D" strokeWidth="15" d="m148 84.7 13.8-8-10-17.3-13.8 8a50 50 0 0 0-27.4-15.9v-16h-20v16A50 50 0 0 0 63 67.4l-13.8-8-10 17.3 13.8 8a50 50 0 0 0 0 31.7l-13.8 8 10 17.3 13.8-8a50 50 0 0 0 27.5 15.9v16h20v-16a50 50 0 0 0 27.4-15.9l13.8 8 10-17.3-13.8-8a50 50 0 0 0 0-31.7Zm-47.5 50.8a35 35 0 1 1 0-70 35 35 0 0 1 0 70Z"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2" values="0;120" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></path></svg>
+                    Loading...
+                    </div>
+                    </div>
+                }
+                
+                <div onClick={()=>{handleAddBunch(5000)}} className="text-red-400 flex px-[8px] py-[4px] mr-5 font-bold  h-full hover:bg-slate-signin hover:cursor-pointer rounded transition duration-200">
+                    <div className="flex flex-col justify-center h-full"><GoPlus/></div>
+                        {isDesktop && <div className=" flex flex-col justify-center h-full text-xs ml-[4px]">Add 5k</div>}
                     </div>
                 <div
             onClick={(e)=>{e.stopPropagation();setFilterButton(false);setSortButton(false);setSearchButton(true);
                 
                 setTimeout(()=>document.getElementById("searchInput")?.focus(),100)}}
-            className="relative flex justify-center">
+                className="relative flex justify-center">
                 <div  className="flex flex-col justify-center text-black pr-[16px] opacity-70 hover:opacity-100 hover:cursor-pointer">
                 <PiMagnifyingGlass/>
                 </div>

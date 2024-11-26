@@ -1,6 +1,7 @@
 'use client'
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { useParams,useRouter } from "next/navigation";
+import { utils } from "prettier/doc.js";
 
 import { FaTable } from "react-icons/fa6";
 import { IoCheckmark } from "react-icons/io5";
@@ -17,12 +18,13 @@ export function Views(
     }
 ){
     const router = useRouter()
-    const util = api.useUtils()
+    const utils = api.useUtils()
 
     const params = useParams<{ baseId: string; tableId: string; viewId: string }>();
 
     const handleViewChange = async(viewId: string) => {
-        window.location.href = `/base/${params.baseId}/${params.tableId}/${viewId}`;
+        await utils.invalidate()
+        router.push(`/base/${params.baseId}/${params.tableId}/${viewId}`);
     };
     return(
         <div className="flex flex-col flex-grow  pt-[8px] py-[12px] space-y-2">
