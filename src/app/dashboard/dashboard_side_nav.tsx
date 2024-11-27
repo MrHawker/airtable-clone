@@ -18,7 +18,7 @@ export function DashBoardSideNav({menuExtended,setMenuExtended,session}:{menuExt
   
     const createBase = api.base.create.useMutation({
         onSuccess: async (data) => {
-        await utils.base.invalidate();
+        // await utils.base.invalidate();
         router.push(`/base/${data.newBase.id}/${data.newTable.id}/${data.newView.id}`)
         },
     });

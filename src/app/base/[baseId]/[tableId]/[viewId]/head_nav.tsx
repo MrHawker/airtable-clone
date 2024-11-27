@@ -23,7 +23,7 @@ import { IoColorFillOutline } from "react-icons/io5";
 import { CiLineHeight } from "react-icons/ci";
 import { CiShare1 } from "react-icons/ci";
 import { PiMagnifyingGlass } from "react-icons/pi";
-import { useParams} from "next/navigation";
+import { useParams, useRouter} from "next/navigation";
 import { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -89,13 +89,13 @@ export function HeadNav({
   }, []);
 
   const params = useParams<{ baseId: string; tableId: string, viewId:string }>()
-  
+  const router = useRouter()
   const utils = api.useUtils();
   const createTable = api.table.create.useMutation({
         onSuccess: async (data) => {
-        await utils.table.invalidate();
+        // await utils.table.invalidate();
         
-        window.location.href = `/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`
+        router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
         },
   });
 
