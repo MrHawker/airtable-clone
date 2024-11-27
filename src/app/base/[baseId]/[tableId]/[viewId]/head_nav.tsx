@@ -30,6 +30,12 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
 import { useDebouncedCallback } from "use-debounce";
 
+interface AdvColumnDef{
+    header: string; 
+    accessorKey: string; 
+    type: string; 
+}
+
 export function HeadNav({
     open,
     setOpen,
@@ -99,10 +105,11 @@ export function HeadNav({
     }
   })
   const handleAddBunch = (count:number) =>{
-    const columnsName = columns.map(col=>{
-        return String(col.header)
+    const columnsId = columns.map(col=>{
+        return String((col as AdvColumnDef).accessorKey)
     })
-    addbunch.mutate({count:count,tableId:params.tableId,columnsName:columnsName})
+    const columnsType = columns.map(col=>String((col as AdvColumnDef).type))
+    addbunch.mutate({count:count,tableId:params.tableId,columnsId,columnsType})
   }
 
   const handleSearchChange = useDebouncedCallback((keyword:string) => {

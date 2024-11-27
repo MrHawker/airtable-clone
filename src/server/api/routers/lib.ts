@@ -53,3 +53,27 @@ export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSc
         .map((row) => ({ rowId: row.id, ...Object(row.values) }) as JsonValue)
         ;
 };
+
+export const checkValidFieldName = (existingNames: string[], newName: string): boolean => {
+    if (!newName.trim()) {
+      return false;
+    }
+
+    const lower = existingNames.map(name => name.toLowerCase());
+    return !lower.includes(newName.toLowerCase());
+
+};
+
+export const nextDefaultName = (existingNames:string[]) : string =>{
+    let maxLabelIndex = 1
+    existingNames.forEach((name) => {
+        const parts = name.split(" ");
+        if (parts[0] === "Label" && parts.length === 2 && parts[1] !== undefined)  {
+            const index = parseInt(parts[1], 10);
+            if (!isNaN(index) && maxLabelIndex < index) {
+                maxLabelIndex = index
+            }
+        }
+    });
+    return `Label ${maxLabelIndex+1}`;
+}

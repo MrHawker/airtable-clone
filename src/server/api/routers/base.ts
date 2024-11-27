@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
@@ -19,7 +20,8 @@ export const baseRouter = createTRPCRouter({
     create: protectedProcedure
     .mutation(async ({ ctx }) => {
       const result = await ctx.db.$transaction(async (prisma) => {
-  
+        const NameCol = createId()
+        const AgeCol = createId()
         const newBase = await prisma.base.create({
           data: {
             createdBy: { connect: { id: ctx.session.user.id } },
@@ -30,9 +32,9 @@ export const baseRouter = createTRPCRouter({
           data: {
             name: 'Table 1',
             base: { connect: { id: newBase.id } },
-            columns: [],
-            columns_type: [],
-            columns_id: [],
+            columns: ['Name','Age'],
+            columns_type: ['String','Number'],
+            columns_id: [NameCol,AgeCol],
             views: {
               create: [], 
             },
@@ -51,7 +53,20 @@ export const baseRouter = createTRPCRouter({
             filterVal: [],
           },
         });
-  
+
+        for (let i = 0; i < 5; i++) {
+          await prisma.data.create({
+            data: {
+              id: createId(), 
+              table: { connect: { id: newTable.id } },
+              values: {
+                [NameCol]: faker.person.fullName(), 
+                [AgeCol]: faker.number.int({ min: 0, max: 100 }), 
+              },
+            },
+          });
+        }
+
         return { newBase:newBase, newTable:newTable, newView:newView };
       });
   

@@ -31,14 +31,15 @@ export const tableRouter = createTRPCRouter({
       )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.$transaction(async (prisma) => {
-        
+        const NameCol = createId()
+        const AgeCol = createId()
         const newTable = await prisma.table.create({
           data: {
             name: input.name,
             base: { connect: { id: input.baseId } },
-            columns: [],
-            columns_type: [],
-            columns_id: [],
+            columns: ['Name','Age'],
+            columns_type: ['String','Number'],
+            columns_id: [NameCol,AgeCol],
             views: {
               create: [], 
             },
@@ -47,7 +48,6 @@ export const tableRouter = createTRPCRouter({
             },
           },
         });
-
 
         const newView = await prisma.view.create({
           data: {
@@ -59,9 +59,24 @@ export const tableRouter = createTRPCRouter({
             filterVal: [],
           },
         });
+        
+        for (let i = 0; i < 5; i++) {
+          await prisma.data.create({
+            data: {
+              id: createId(), 
+              table: { connect: { id: newTable.id } },
+              values: {
+                [NameCol]: faker.person.fullName(), 
+                [AgeCol]: faker.number.int({ min: 0, max: 100 }), 
+              },
+            },
+          });
+        }
+
         return { newTable:newTable, newView:newView };
       });
-  
+      
+      
       return result;
     }),
 
@@ -96,22 +111,20 @@ export const tableRouter = createTRPCRouter({
       z.object({
         tableId: z.string(),
         count: z.number(),
-        columnsName: z.array(z.string()),
+        columnsId: z.array(z.string()),
+        columnsType: z.array(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.$transaction(async (prisma) => {
-        const valuesToAdd: JsonValue = {};
-        input.columnsName.forEach((col) => {
-          valuesToAdd[col] = faker.person.fullName();
-        });
+        
         const rows = Array.from({ length: input.count }, () => {
           const valuesToAdd: JsonValue = {};
-          input.columnsName.forEach((col) => {
+          input.columnsId.forEach((col,index) => {
             if(col !== "rowId"){
-              valuesToAdd[col] = faker.person.fullName();
+              if(input.columnsType.at(index) === "String") valuesToAdd[col] = faker.person.fullName() 
+              else valuesToAdd[col] = faker.number.int({ min: 0, max: 100 })
             }
-            
           });
           return {
             tableId: input.tableId,
@@ -158,13 +171,14 @@ export const tableRouter = createTRPCRouter({
     addColumn: protectedProcedure
     .input(
       z.object({
+        id: z.string(),
         tableId: z.string(),
         columnName: z.string(),
         columnType: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { tableId, columnName, columnType } = input;
+      const { id,tableId, columnName, columnType } = input;
       const result = await ctx.db.$transaction(async (prisma) => {
         
         const newTable = await prisma.table.update({
@@ -179,7 +193,7 @@ export const tableRouter = createTRPCRouter({
               push: columnType, 
             },
             columns_id: {
-              push: createId(),
+              push: id,
             },
           },
         });
@@ -245,7 +259,7 @@ export const tableRouter = createTRPCRouter({
         where: {
           tableId: input.tableId,
         },
-        
+
         orderBy: {
           numId: 'asc',
         },
@@ -279,6 +293,56 @@ export const tableRouter = createTRPCRouter({
       };
     }),
 
+    editColumnName: protectedProcedure
+    .input(
+        z.object({
+          tableId: z.string(),
+          oldName: z.string(),
+          newName: z.string(),
+          orgColumns: z.array(z.string()),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.$transaction(async (prisma) => {
+        const newColumns = input.orgColumns.map(col => 
+          col === input.oldName ? input.newName : col
+        );
+
+        await prisma.table.update({
+          where: { id: input.tableId },
+          data: { 
+            columns: newColumns
+          }
+        });
+        console.log(newColumns)
+        return { 
+          newColumns
+        };
+      });
+
+      return result;
+    }),
+
+    deleteColumn: protectedProcedure
+    .input(
+        z.object({
+          tableId: z.string(),
+          newColumns: z.array(z.string()),
+          newColumnsId: z.array(z.string()),
+          newColumnsType: z.array(z.string()),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+
+      await ctx.db.table.update({
+        where: { id: input.tableId },
+          data: { 
+            columns: input.newColumns,
+            columns_id: input.newColumnsId,
+            columns_type: input.newColumnsType
+          }
+      })
+    }),
     
 })
 
