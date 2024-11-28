@@ -59,19 +59,19 @@ export const tableRouter = createTRPCRouter({
             filterVal: [],
           },
         });
+  
+        const defaultData = Array.from({length: 5}, () => ({
+          id: createId(),
+          tableId: newTable.id,
+          values: {
+            [NameCol]: faker.person.fullName(),
+            [AgeCol]: faker.number.int({min: 0, max: 100}),
+          },
+        }));
         
-        for (let i = 0; i < 5; i++) {
-          await prisma.data.create({
-            data: {
-              id: createId(), 
-              table: { connect: { id: newTable.id } },
-              values: {
-                [NameCol]: faker.person.fullName(), 
-                [AgeCol]: faker.number.int({ min: 0, max: 100 }), 
-              },
-            },
-          });
-        }
+        await prisma.data.createMany({
+          data: defaultData,
+        });
 
         return { newTable:newTable, newView:newView };
       });

@@ -92,8 +92,9 @@ export function HeadNav({
   const router = useRouter()
   const utils = api.useUtils();
   const createTable = api.table.create.useMutation({
+        
         onSuccess: async (data) => {
-        // await utils.table.invalidate();
+        await utils.table.invalidate();
         
         router.push(`/base/${params.baseId}/${data.newTable.id}/${data.newView.id}`)
         },

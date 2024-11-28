@@ -92,9 +92,11 @@ export function Table({
         setFilters(content ?? []);
         setSorts(content2 ?? [])
     }, [view,params.viewId]);
+    
     const debouncedSetLoading = useDebouncedCallback((loading: boolean) => {
             setIsLoading(loading);
     },300);
+
     useEffect(()=>{
         debouncedSetLoading(isFetching);
     },[isFetching])
@@ -342,35 +344,35 @@ export function Table({
         }
     };
 
-    useEffect(() => {
-        const tableDataMap = new Map(
-            tableData.map(row => [(row as TableRow)?.rowId, row])
-        );
-        const mergedData = flatData.map(row => {
-            const existingRow = tableDataMap.get((row as TableRow)?.rowId);
-            return existingRow ?? row;
-        });
-        if (searchKey.length === 0) {
-            setTableData(mergedData);
-            return;
-        }
-        setTableData(
-            mergedData.filter((row) => {
-                if(row == undefined) return false
-                for (const col of columns) {
-                    if(String(col.header) === "rowId"){
-                        continue
-                    }
-                    const cellValue = row[String(col.header) as keyof object];
-                    if (cellValue && String(cellValue).toLowerCase().includes(searchKey.toLowerCase())) {
-                        return true; 
-                    }
-                }
-                return false; 
-            })
-        );
-       
-    }, [searchKey,flatData]);
+    /*Remove this later when done with backend filtering */
+    // useEffect(() => {
+    //     const tableDataMap = new Map(
+    //         tableData.map(row => [(row as TableRow)?.rowId, row])
+    //     );
+    //     const mergedData = flatData.map(row => {
+    //         const existingRow = tableDataMap.get((row as TableRow)?.rowId);
+    //         return existingRow ?? row;
+    //     });
+    //     if (searchKey.length === 0) {
+    //         setTableData(mergedData);
+    //         return;
+    //     }
+    //     setTableData(
+    //         mergedData.filter((row) => {
+    //             if(row == undefined) return false
+    //             for (const col of columns) {
+    //                 if(String(col.header) === "rowId"){
+    //                     continue
+    //                 }
+    //                 const cellValue = row[String(col.header) as keyof object];
+    //                 if (cellValue && String(cellValue).toLowerCase().includes(searchKey.toLowerCase())) {
+    //                     return true; 
+    //                 }
+    //             }
+    //             return false; 
+    //         })
+    //     );
+    // }, [searchKey,flatData]);
     
     const table = useReactTable({
         data: tableData,
