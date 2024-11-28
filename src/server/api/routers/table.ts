@@ -231,7 +231,7 @@ export const tableRouter = createTRPCRouter({
         });
         return tables;
     }),
-    
+
     getTableById: protectedProcedure
     .input(
     z.object({
@@ -275,7 +275,7 @@ export const tableRouter = createTRPCRouter({
         input.filters,
         input.sorts
       );
-  
+      
       const rows = processedData.slice(
         input.cursor ? input.cursor : 0,
         (input.cursor ? input.cursor : 0) + input.limit
@@ -316,7 +316,6 @@ export const tableRouter = createTRPCRouter({
             columns: newColumns
           }
         });
-        console.log(newColumns)
         return { 
           newColumns
         };

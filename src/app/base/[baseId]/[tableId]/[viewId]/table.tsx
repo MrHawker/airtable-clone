@@ -78,8 +78,10 @@ export function Table({
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
                 refetchOnWindowFocus:false,
                 gcTime:0,
+                staleTime:0
             }
         );
+    
     useEffect(() => {
         const content = view?.filterBy.map((filter, index) => ({
             id: filter,
@@ -91,8 +93,7 @@ export function Table({
         }));
         setFilters(content ?? [])
         setSorts(content2 ?? [])
-        setTrueFilters(content ?? [])
-        setTrueSorts(content2 ?? [])
+        
     }, [view,params.viewId]);
     
     const debouncedSetLoading = useDebouncedCallback((loading: boolean) => {
@@ -116,7 +117,6 @@ export function Table({
                 header: 'rowId',
             };
             setColumns([rowId, ...fields]);
-            
         }
     }, [tables]);
 
@@ -133,24 +133,34 @@ export function Table({
         if (sorts.length == 0){
             setTrueSorts([])
         }else{
-            setTrueSorts(
-                sorts
-                    .map((sort) => {
-                        if (sort.id.length > 0) {
-                            const colInterest = columns.find((col) => sort.id === (col as AdvColumnDef).header)
-                            if(colInterest === undefined) return undefined
-                            return {
-                                id: (colInterest as AdvColumnDef).accessorKey,
-                                desc: sort.desc
-                            };
-                        }
-                        return undefined; 
-                    })
-                    .filter((sort)=> sort !== undefined) 
-            );
+            const newSorts = sorts
+                        .map((sort) => {
+                            if (sort.id.length > 0) {
+                                const colInterest = columns.find((col) => sort.id === (col as AdvColumnDef).header)
+                                if(colInterest === undefined) return undefined
+                                return {
+                                    id: (colInterest as AdvColumnDef).accessorKey,
+                                    desc: sort.desc
+                                };
+                            }
+                            return undefined; 
+                        })
+                        .filter((sort)=> sort !== undefined)
+
+            let equal = false
+            
+            if(newSorts.length === trueSorts.length){
+                equal = newSorts.every((sort, index) => {
+                    if(trueSorts[index] === undefined) return false;
+                    return sort.id === trueSorts[index].id && sort.desc === trueSorts[index].desc
+                }  
+                );
+            }
+            
+            if (!equal) {
+                setTrueSorts(newSorts);
+            }
         }
-        
-        
     }, [sorts]);
 
     useEffect(() => {
@@ -168,21 +178,39 @@ export function Table({
             }
             
             else{
-                setTrueFilters(
-                    filters
-                        .map((filter) => {
-                            if (filter.id.length > 0) {
-                                const colInterest = columns.find((col) => filter.id === (col as AdvColumnDef).header)
-                                if(colInterest === undefined) return undefined
-                                return {
-                                    id: (colInterest as AdvColumnDef).accessorKey,
-                                    value: filter.value
-                                };
-                            }
-                            return undefined;
-                        })
-                        .filter((filter) => filter !== undefined) 
-                );
+                const newFilters = filters.map((filter) => {
+                                if (filter.id.length > 0 && filter.value !== "") {
+                                    if(filter.value !== "Empty" && filter.value !== "Not Empty"){
+                                        const temp = String(filter.value).split("_")
+                                        if(temp.length < 2) return undefined;
+                                    }
+                                    const colInterest = columns.find((col) => filter.id === (col as AdvColumnDef).header)
+                                    if(colInterest === undefined) return undefined
+                                    return {
+                                        id: (colInterest as AdvColumnDef).accessorKey,
+                                        value: filter.value
+                                    };
+                                }
+                                return undefined;
+                            })
+                            .filter((filter) => filter !== undefined)
+                
+                let equal = false
+                if(newFilters !== undefined){
+                    if(newFilters.length === trueFilters.length){
+                        equal = newFilters.every((filter, index) => {
+                            if(trueFilters[index] === undefined) return false;
+                            return filter.id === trueFilters[index].id && filter.value === trueFilters[index].value
+                        }  
+                        );
+                    }
+                    
+                }
+                
+                if (!equal) {
+                    console.log(newFilters)
+                    // setTrueFilters(newFilters);
+                }
             }
         
         
@@ -217,7 +245,6 @@ export function Table({
             void utils.table.getRows.cancel();
             const updatedRawData = [...tableData, { 
                 rowId: newRow.id,
-                // values: {},
             }];
             setTableData(updatedRawData);
             setRecordsCount(recordsCount+1);
@@ -234,6 +261,7 @@ export function Table({
 
     const addColumn = api.table.addColumn.useMutation({
         onMutate: async (col) => {
+            
             const newColumn = {
                 accessorKey: col.id,
                 header: col.columnName ?? 'Column',
@@ -245,9 +273,7 @@ export function Table({
                 ...Object(row) as object,
                 [newColumn.accessorKey]: "" 
             }));
-
             setTableData(updatedRawData);
-            
         },
         
         
@@ -276,7 +302,8 @@ export function Table({
         },
         
     })
-    
+    const updateView = api.view.editView.useMutation({});
+
     const editColumnName = api.table.editColumnName.useMutation({
         onMutate: ({tableId,oldName,newName,orgColumns}) =>{
             setColumns(columns.map((col,index)=>{
@@ -286,9 +313,54 @@ export function Table({
                     type: (col as AdvColumnDef).type,
                 }
             }))
+            const newFilters = [...filters]
+
+            const index = newFilters.findIndex((col)=>col.id === oldName)
+            newFilters[index] = {
+                id:newName,
+                value: newFilters[index]?.value ?? ""
+            }
+            
+            const newSorts = [...sorts]
+
+            const index2 = newSorts.findIndex((col)=>col.id === oldName)
+            newSorts[index2] = {
+                id: newName,
+                desc: newSorts[index]?.desc ?? false
+            }
+            
+            handleChangeConfig(newFilters,newSorts)
+            setFilters(newFilters)
+            setSorts(newSorts)
         }
     })
-    
+    const handleChangeConfig = (filters:ColumnFiltersState,sorts:SortingState) =>{
+        const filterId: string[] = [];
+        const filterVal: string[] = [];
+        const sortId: string[] = [];
+        const sortOrder: string[] = [];
+        
+        filters.forEach((filter) => {
+            if (filter.value == '' || String(filter.value) == '') return;
+            
+            filterId.push(filter.id);
+            filterVal.push(String(filter.value));
+        });
+
+        sorts.forEach((sort) => {
+            if (sort.id === '') return;
+            sortId.push(sort.id);
+            sortOrder.push(sort.desc ? "Descending" : "Ascending");
+        });
+        
+        updateView.mutate({
+            viewId: params.viewId,
+            filterBy: filterId,
+            filterVal: filterVal,
+            sortBy: sortId,
+            sortOrder: sortOrder
+        });
+  }
     const handleEditColumnName = (oldName:string,newName:string) => {
         if(newName === ""){
             seteditHIndex(-1)
@@ -333,11 +405,12 @@ export function Table({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, rowId: string, columnId: string) => {
         const newValue = e.target.value;
+        const colInterest = columns.find((col)=>(col as AdvColumnDef).accessorKey === columnId)
         const updatedRawData = tableData.map((row) => 
             (row as TableRow)?.rowId === rowId
                 ? { 
                     ...Object(row) as object, 
-                    [columnId]: newValue
+                    [columnId]: (colInterest as AdvColumnDef).type === "String" ? newValue : parseFloat(e.target.value)
                 }
                 : row
         );

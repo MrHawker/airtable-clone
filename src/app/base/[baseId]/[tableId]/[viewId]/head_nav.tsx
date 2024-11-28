@@ -125,30 +125,31 @@ export function HeadNav({
   }
 
   const handleDeleteFilter = (index: number) => {
-    handleChangeConfig(filters.filter((fil, i) => i !== index),sorts)
-    setFilters((prevFilters) => {
-      const updatedFilters = prevFilters.filter((fil, i) => i !== index);
-      return updatedFilters;
-    });
-    
-    
+
+    const updatedFilters = filters.filter((fil, i) => i !== index);
+    handleChangeConfig(updatedFilters,sorts)
+    setFilters(updatedFilters);
   };
 
   const handleSetFilter = (index:number,field:string,value:string) => {
 
     const newFilters = [...filters];
-
+    let newValue = value
+    if(field === "value" && value !== "Empty" && value !== "Not Empty"){
+        const temp = (document.getElementById(`FilterNumber_${index}`) as HTMLInputElement).value
+        newValue = value + "_" +  temp
+    }   
+     
     newFilters[index] = {
         
         id: newFilters[index]?.id ?? "", 
         value: newFilters[index]?.value ?? "", 
-        [field]: value ?? "",
+        [field]: newValue ?? "",
     };
 
     handleChangeConfig(newFilters,sorts)
 
     setFilters(newFilters);
-    
     
   };
 
@@ -177,9 +178,27 @@ export function HeadNav({
     setSorts(newSorts);
   }
 
-  const handleSetKeyword = useDebouncedCallback((keyword:string)=>{
-    //TODO:
+  const handleSetKeyword = useDebouncedCallback((index:number,keyword:string)=>{
+    const newFilters = [...filters];
+    const key = String(newFilters[index]?.value).split("_")[0]
+    if(key === "" || key === "Empty" 
+        || key === "Not Empty") return;
+
+    const newValue = key + "_" + keyword
+
+    newFilters[index] = {
+        
+        id: newFilters[index]?.id ?? "", 
+        value: newValue ?? "", 
+        
+    };
+
+    handleChangeConfig(newFilters,sorts)
+
+    setFilters(newFilters);
+
   },500)
+
   const updateView = api.view.editView.useMutation({});
 
   const handleChangeConfig = (filters:ColumnFiltersState,sorts:SortingState) =>{
@@ -190,6 +209,7 @@ export function HeadNav({
         
         filters.forEach((filter) => {
             if (filter.value == '' || String(filter.value) == '') return;
+            
             filterId.push(filter.id);
             filterVal.push(String(filter.value));
         });
@@ -393,7 +413,7 @@ export function HeadNav({
                                                         ((columns.find((col) => col.header === filter.id) as AdvColumnDef).type === "String" ? (
                                                             <select
                                                                 onChange={(e) => handleSetFilter(index, "value", e.target.value)}
-                                                                value={String(filter.value) || "default"}
+                                                                value={String(filter.value).split("_")[0] ?? "default"}
                                                                 className="border mr-2"
                                                             >
                                                                 <option value="default" disabled>
@@ -409,7 +429,7 @@ export function HeadNav({
                                                         ):(
                                                             <select
                                                                 onChange={(e) => handleSetFilter(index, "value", e.target.value)}
-                                                                value={String(filter.value) || "default"}
+                                                                value={String(filter.value).split("_")[0] ?? "default"}
                                                                 className="border mr-2"
                                                             >
                                                                 <option value="default" disabled>
@@ -432,7 +452,24 @@ export function HeadNav({
                                                         )}
                                                         
                                                         <input
-                                                        onChange={(e)=>handleSetKeyword(e.target.value)}
+                                                        id={`FilterNumber_${index}`}
+                                                        type={
+                                                            ((columns.find((col) => col.header === filter.id)) as AdvColumnDef)?.type === "Number"
+                                                                ? "number"
+                                                                : "text"
+                                                        }
+                                                        disabled={
+                                                            filter.value === "" ||
+                                                            filter.value === "Empty" ||
+                                                            filter.value === "Not Empty"
+                                                        }
+                                                        placeholder={
+                                                            filter.value === "" ||
+                                                            filter.value === "Empty" ||
+                                                            filter.value === "Not Empty" ? 'N/A'
+                                                            : 'Enter a value'
+                                                        }
+                                                        onChange={(e)=>handleSetKeyword(index,e.target.value)}
                                                         className="border focus:outline-none focus:ring-2 focus:ring-blue-600 p-1">
                                                         </input>
                                                     </div>
