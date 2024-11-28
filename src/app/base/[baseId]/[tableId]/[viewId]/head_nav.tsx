@@ -177,6 +177,9 @@ export function HeadNav({
     setSorts(newSorts);
   }
 
+  const handleSetKeyword = useDebouncedCallback((keyword:string)=>{
+    //TODO:
+  },500)
   const updateView = api.view.editView.useMutation({});
 
   const handleChangeConfig = (filters:ColumnFiltersState,sorts:SortingState) =>{
@@ -429,9 +432,7 @@ export function HeadNav({
                                                         )}
                                                         
                                                         <input
-                                                        onChange={(e)=>{useDebouncedCallback(()=>{
-                                                            handleSetFilter(index, "keyword", e.target.value)
-                                                        },500)}}
+                                                        onChange={(e)=>handleSetKeyword(e.target.value)}
                                                         className="border focus:outline-none focus:ring-2 focus:ring-blue-600 p-1">
                                                         </input>
                                                     </div>
