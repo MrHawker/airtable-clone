@@ -165,7 +165,6 @@ export function Table({
 
     useEffect(() => {
         let flag = false;
-        
         filters.forEach((filter) => {
             if (filter.id.length > 0 && String(filter.value).length > 0) {
                 flag = true;
@@ -182,7 +181,7 @@ export function Table({
                                 if (filter.id.length > 0 && filter.value !== "") {
                                     if(filter.value !== "Empty" && filter.value !== "Not Empty"){
                                         const temp = String(filter.value).split("_")
-                                        if(temp.length < 2) return undefined;
+                                        if(temp.length < 2 || temp[1] === undefined || temp[1] === "") return undefined;
                                     }
                                     const colInterest = columns.find((col) => filter.id === (col as AdvColumnDef).header)
                                     if(colInterest === undefined) return undefined
@@ -208,12 +207,9 @@ export function Table({
                 }
                 
                 if (!equal) {
-                    console.log(newFilters)
-                    // setTrueFilters(newFilters);
+                    setTrueFilters(newFilters);
                 }
             }
-        
-        
     }, [filters]);
 
     const flatData = useMemo(

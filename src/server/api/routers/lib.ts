@@ -20,20 +20,73 @@ export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSc
         .filter((row) => {
             for (const filter of filters) {
                 if (row.values == null) return false;
+
+                const temp = String(filter.value).split("_")
+                const filterKey = temp[0]
+                const filterVal = temp[1]
+                const val = String(row.values[filter.id as keyof object])
                 
-                if (String(filter.value) === "Empty") {
-                    if (!(String(row.values[filter.id as keyof object]) === "undefined" || 
-                        String(row.values[filter.id as keyof object]) === "")) {
+                if (filterKey === "Empty") {
+                    if (!(val === "undefined" || val === "")) {
                         return false;
                     }
                 }
-                else if (String(filter.value) === "Not Empty") {
-                    if (String(row.values[filter.id as keyof object]) === "undefined" || 
-                        String(row.values[filter.id as keyof object]) === "") {
+                else if (filterKey === "Not Empty") {
+                    if (val === "undefined" || val === "") {
                         return false;
+                    }
+                }
+                if (filterVal === undefined || filterVal === ""){
+                    return true;
+                }
+
+                if(filterKey === "Contain") {
+                    if(!val.toLowerCase().includes(filterVal.toLowerCase())){
+                        return false
+                    }
+                }
+                else if(filterKey === "Not Contain"){
+                    if(val.toLowerCase().includes(filterVal.toLowerCase())){
+                        return false
+                    }
+                }
+                else if(filterKey === "Is"){
+                    if(!(val === filterVal)){
+                        return false
+                    }
+                }else if(filterKey === "Is Not"){
+                    if(val === filterVal){
+                        return false
+                    }
+                }else if(filterKey === "Equal"){
+                    if(!(val === filterVal)){
+                        return false
+                    }
+                }else if(filterKey === "Not Equal"){
+                    if(val === filterVal){
+                        return false
+                    }
+                }else if(filterKey === "Greater Than"){
+                    if(!(parseFloat(val) > parseFloat(filterVal))){
+                        return false
+                    }
+                }else if(filterKey === "Less Than"){
+                    console.log(val)
+                    console.log(parseFloat(filterVal))
+                    if(!(parseFloat(val) < parseFloat(filterVal))){
+                        return false
+                    }
+                }else if(filterKey === "Less Than Or Equal"){
+                    if(!(parseFloat(val) <= parseFloat(filterVal))){
+                        return false
+                    }
+                }else if(filterKey === "Greater Than Or Equal"){
+                    if(!(parseFloat(val) >= parseFloat(filterVal))){
+                        return false
                     }
                 }
             }
+            
             return true;
         })
         .sort((x,y)=>{

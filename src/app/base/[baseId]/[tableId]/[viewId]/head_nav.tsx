@@ -75,7 +75,7 @@ export function HeadNav({
   const [filterbutton,setFilterButton] = useState(false);
   const [sortbutton,setSortButton] = useState(false)
   const [searchbutton,setSearchButton] = useState(false)
-
+  
   useEffect(() => {
 
     const isDesktop = () => {
@@ -135,20 +135,36 @@ export function HeadNav({
 
     const newFilters = [...filters];
     let newValue = value
-    if(field === "value" && value !== "Empty" && value !== "Not Empty"){
-        const temp = (document.getElementById(`FilterNumber_${index}`) as HTMLInputElement).value
-        newValue = value + "_" +  temp
-    }   
-     
-    newFilters[index] = {
+    if (field === "id") {
+        const s = document.getElementById(`Select_${index}`) as HTMLSelectElement;
+
+        if (s) {
+            console.log(s.value)
         
-        id: newFilters[index]?.id ?? "", 
-        value: newFilters[index]?.value ?? "", 
-        [field]: newValue ?? "",
-    };
+        }
+        newFilters[index] = {
+            id: value, 
+            value: "", 
+        };
+
+    } else if (field === "value" && value !== "Empty" && value !== "Not Empty") {
+        const temp = (document.getElementById(`FilterNumber_${index}`) as HTMLInputElement).value;
+        newValue = value + "_" + temp;
+        newFilters[index] = {
+            id: newFilters[index]?.id ?? "", 
+            value: newValue, 
+        };
+    } else {
+        newFilters[index] = {
+            id: newFilters[index]?.id ?? "", 
+            value: newFilters[index]?.value ?? "", 
+            [field]: newValue ?? "",
+        };
+    }
 
     handleChangeConfig(newFilters,sorts)
-
+    console.log(filters)
+    console.log(newFilters)
     setFilters(newFilters);
     
   };
@@ -412,8 +428,13 @@ export function HeadNav({
                                                         {columns.find((col) => col.header === filter.id) ? (
                                                         ((columns.find((col) => col.header === filter.id) as AdvColumnDef).type === "String" ? (
                                                             <select
+                                                                id={`Select_${index}`}
                                                                 onChange={(e) => handleSetFilter(index, "value", e.target.value)}
-                                                                value={String(filter.value).split("_")[0] ?? "default"}
+                                                                value={String(filter.value).split("_")[0] === ""
+                                                                || String(filter.value).split("_")[0] === undefined
+                                                                 ? 
+                                                                "default"
+                                                                :String(filter.value).split("_")[0]}
                                                                 className="border mr-2"
                                                             >
                                                                 <option value="default" disabled>
@@ -429,7 +450,11 @@ export function HeadNav({
                                                         ):(
                                                             <select
                                                                 onChange={(e) => handleSetFilter(index, "value", e.target.value)}
-                                                                value={String(filter.value).split("_")[0] ?? "default"}
+                                                                value={String(filter.value).split("_")[0] === ""
+                                                                || String(filter.value).split("_")[0] === undefined
+                                                                 ? 
+                                                                "default"
+                                                                :String(filter.value).split("_")[0]}
                                                                 className="border mr-2"
                                                             >
                                                                 <option value="default" disabled>
@@ -452,6 +477,7 @@ export function HeadNav({
                                                         )}
                                                         
                                                         <input
+                                                        defaultValue={String(filter.value).split("_")[1]}
                                                         id={`FilterNumber_${index}`}
                                                         type={
                                                             ((columns.find((col) => col.header === filter.id)) as AdvColumnDef)?.type === "Number"

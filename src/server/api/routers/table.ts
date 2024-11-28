@@ -276,6 +276,7 @@ export const tableRouter = createTRPCRouter({
         input.sorts
       );
       
+      
       const rows = processedData.slice(
         input.cursor ? input.cursor : 0,
         (input.cursor ? input.cursor : 0) + input.limit
@@ -316,6 +317,7 @@ export const tableRouter = createTRPCRouter({
             columns: newColumns
           }
         });
+        
         return { 
           newColumns
         };
