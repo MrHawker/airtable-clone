@@ -12,6 +12,7 @@ interface sortSchema {
 interface RowData {
     values: JsonValue;
     id: number | string;
+    
 }
 
 export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSchema[]): JsonValue[] => {

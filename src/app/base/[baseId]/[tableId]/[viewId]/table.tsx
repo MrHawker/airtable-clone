@@ -89,8 +89,10 @@ export function Table({
             id: sort,
             desc: view?.sortOrder.at(index) === "Descending" ? true : false
         }));
-        setFilters(content ?? []);
+        setFilters(content ?? [])
         setSorts(content2 ?? [])
+        setTrueFilters(content ?? [])
+        setTrueSorts(content2 ?? [])
     }, [view,params.viewId]);
     
     const debouncedSetLoading = useDebouncedCallback((loading: boolean) => {
@@ -114,6 +116,7 @@ export function Table({
                 header: 'rowId',
             };
             setColumns([rowId, ...fields]);
+            
         }
     }, [tables]);
 
@@ -135,6 +138,7 @@ export function Table({
                     .map((sort) => {
                         if (sort.id.length > 0) {
                             const colInterest = columns.find((col) => sort.id === (col as AdvColumnDef).header)
+                            if(colInterest === undefined) return undefined
                             return {
                                 id: (colInterest as AdvColumnDef).accessorKey,
                                 desc: sort.desc
@@ -169,6 +173,7 @@ export function Table({
                         .map((filter) => {
                             if (filter.id.length > 0) {
                                 const colInterest = columns.find((col) => filter.id === (col as AdvColumnDef).header)
+                                if(colInterest === undefined) return undefined
                                 return {
                                     id: (colInterest as AdvColumnDef).accessorKey,
                                     value: filter.value
@@ -193,7 +198,7 @@ export function Table({
     const totalFetched = flatData.length
     
     useEffect(() => {
-        console.log(flatData)
+        
         setRecordsCount(totalDBRowCount)
         const newRows = flatData.filter((row) => 
             !(previousFlatData.current as TableRow[]).some(prevRow => prevRow?.rowId === (row as TableRow)?.rowId)

@@ -137,70 +137,44 @@ export function HeadNav({
   const handleSetFilter = (index:number,field:string,value:string) => {
 
     const newFilters = [...filters];
-        newFilters[index] = {
-            ...(newFilters[index] ?? {}),
-            id: newFilters[index]?.id ?? "", 
-            value: newFilters[index]?.value ?? "", 
-            [field]: value ?? "",
+
+    newFilters[index] = {
+        
+        id: newFilters[index]?.id ?? "", 
+        value: newFilters[index]?.value ?? "", 
+        [field]: value ?? "",
     };
+
     handleChangeConfig(newFilters,sorts)
 
-    setFilters(prevFilters => {
-        const newFilters = [...prevFilters];
-        newFilters[index] = {
-            ...(newFilters[index] ?? {}),
-            id: newFilters[index]?.id ?? "", 
-            value: newFilters[index]?.value ?? "", 
-            [field]: value ?? "",
-        };
-        return newFilters;
-    });
+    setFilters(newFilters);
     
     
   };
+
   const handleSetSort = (index:number,field:string,value:string) =>{
     const newSorts = [...sorts];
         if(field === "id"){
             newSorts[index] = {
-                ...(newSorts[index] ?? {}),
+                
                 id: value, 
                 desc: newSorts[index]?.desc ?? false, 
             };
         }else if(field === "order"){
             newSorts[index] = {
-                ...(newSorts[index] ?? {}),
+                
                 id: newSorts[index]?.id ?? "", 
                 desc: value === "Descending" ? true : false, 
             };
     }
     handleChangeConfig(filters,newSorts)
-    setSorts(prevSorts => {
-        const newSorts = [...prevSorts];
-        if(field === "id"){
-            newSorts[index] = {
-                ...(newSorts[index] ?? {}),
-                id: value, 
-                desc: newSorts[index]?.desc ?? false, 
-            };
-        }else if(field === "order"){
-            newSorts[index] = {
-                ...(newSorts[index] ?? {}),
-                id: newSorts[index]?.id ?? "", 
-                desc: value === "Descending" ? true : false, 
-            };
-        }
-        
-        return newSorts;
-    });
+    setSorts(newSorts);
   }
+
   const handleDeleteSort = (index:number) =>{
     const newSorts = sorts.filter((fil, i) => i !== index);
     handleChangeConfig(filters,newSorts)
-    setSorts((prevSorts) => {
-        const newSorts = prevSorts.filter((fil, i) => i !== index);
-        
-        return newSorts;
-      });
+    setSorts(newSorts);
   }
 
   const updateView = api.view.editView.useMutation({});
@@ -216,11 +190,13 @@ export function HeadNav({
             filterId.push(filter.id);
             filterVal.push(String(filter.value));
         });
+
         sorts.forEach((sort) => {
             if (sort.id === '') return;
             sortId.push(sort.id);
             sortOrder.push(sort.desc ? "Descending" : "Ascending");
         });
+
         updateView.mutate({
             viewId: params.viewId,
             filterBy: filterId,
@@ -372,13 +348,12 @@ export function HeadNav({
                             {
                                 filters.length == 0 ?
                                 <div className="px-[16px] pt-[16px] w-[296px] text-xs text-slate-400 ">
-                                No filter conditions are applied
+                                    No filter conditions are applied
                                 </div>
                                 :
                                 <div>
                                     <div className="px-[16px] pt-[16px] text-xs text-slate-400 ">
                                         In this view, show records
-                                        
                                     </div>
                                     <div className="pt-[12px] px-[16px] space-y-3">
                                         {
@@ -410,14 +385,55 @@ export function HeadNav({
                                                                 })
                                                             }
                                                             
-                                                        </select>
-                                                        <select onChange={(e)=>handleSetFilter(index,"value",e.target.value)} value = {String(filter.value) || "default"} className="border">
-                                                            <option value="default" disabled>
-                                                            Choose a kind
-                                                            </option>
-                                                            <option value="Empty">Empty</option>
-                                                            <option value="Not Empty">Not Empty</option>
-                                                        </select>
+                                                        </select> 
+                                                        {columns.find((col) => col.header === filter.id) ? (
+                                                        ((columns.find((col) => col.header === filter.id) as AdvColumnDef).type === "String" ? (
+                                                            <select
+                                                                onChange={(e) => handleSetFilter(index, "value", e.target.value)}
+                                                                value={String(filter.value) || "default"}
+                                                                className="border mr-2"
+                                                            >
+                                                                <option value="default" disabled>
+                                                                    Choose a kind
+                                                                </option>
+                                                                <option value="Empty">Empty</option>
+                                                                <option value="Not Empty">Not Empty</option>
+                                                                <option value="Contain">Contain</option>
+                                                                <option value="Not Contain">Not Contain</option>
+                                                                <option value="Is">Is</option>
+                                                                <option value="Is Not">Is Not</option>
+                                                            </select>
+                                                        ):(
+                                                            <select
+                                                                onChange={(e) => handleSetFilter(index, "value", e.target.value)}
+                                                                value={String(filter.value) || "default"}
+                                                                className="border mr-2"
+                                                            >
+                                                                <option value="default" disabled>
+                                                                    Choose a kind
+                                                                </option>
+                                                                <option value="Greater Than">&gt;</option>
+                                                                <option value="Less Than">&lt;</option>
+                                                                <option value="Greater Than Or Equal">&ge;</option>
+                                                                <option value="Less Than Or Equal">&le;</option>
+                                                                <option value="Equal">=</option>
+                                                                <option value="Not Equal">&ne;</option>
+                                                                <option value="Empty">Empty</option>
+                                                                <option value="Not Empty">Not Empty</option>
+                                                            </select>
+                                                        ))
+                                                        ):(
+                                                            <select value="default" disabled className="border mr-2">
+                                                                <option value="default">Choose a field first</option>
+                                                            </select>
+                                                        )}
+                                                        
+                                                        <input
+                                                        onChange={(e)=>{useDebouncedCallback(()=>{
+                                                            handleSetFilter(index, "keyword", e.target.value)
+                                                        },500)}}
+                                                        className="border focus:outline-none focus:ring-2 focus:ring-blue-600 p-1">
+                                                        </input>
                                                     </div>
                                                     <div onClick={()=>handleDeleteFilter(index)} className="px-2 py-1 hover:bg-red-500 hover:cursor-pointer ml-3 transition ease-in-out duration-200">
                                                     <FaRegTrashAlt className=" text-md "/>

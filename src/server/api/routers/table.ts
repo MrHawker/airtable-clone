@@ -217,6 +217,7 @@ export const tableRouter = createTRPCRouter({
         });
         return tables;
     }),
+
     getFirstTable: protectedProcedure
     .input(
     z.object({
@@ -230,6 +231,7 @@ export const tableRouter = createTRPCRouter({
         });
         return tables;
     }),
+    
     getTableById: protectedProcedure
     .input(
     z.object({
