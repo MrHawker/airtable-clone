@@ -24,17 +24,18 @@ export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSc
             for (const filter of filters) {
                 
                 if (row.values == null) return false;
-                let flag = false
+                
 
                 if(filter.id === 'Search'){
-                    console.log(columns_id)
+                    let flag = false
                     for (const id of columns_id){
                         if(String(row.values[id as keyof object]).includes(String(filter.value))){
                             flag = true
                         }
                     }
+                    if(!flag) return false;
                 }
-                if(!flag) return false;
+                
 
                 const temp = String(filter.value).split("_")
                 const filterKey = temp[0]
