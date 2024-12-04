@@ -22,17 +22,23 @@ export const applyFilter = (
 ): JsonValue[] => {
   return data
     .filter((row) => {
+      
       if (row.values == null) return false;
-
+      
       for (const filter of filters) {
-        if (filter.id === "Search") {
+        if (filter.id === 'Search') {
           let flag = false;
+          
           for (const id of columns_id) {
+            console.log(String(row.values[id as keyof object]))
             if (
               String(row.values[id as keyof object])
                 .toLowerCase()
                 .includes(String(filter.value).toLowerCase())
             ) {
+              console.log("-----------")
+              console.log(row)
+              console.log("-----------")
               flag = true;
             }
           }
@@ -100,7 +106,6 @@ export const applyFilter = (
           }
         }
       }
-      
       return true;
     })
     .sort((x, y) => {

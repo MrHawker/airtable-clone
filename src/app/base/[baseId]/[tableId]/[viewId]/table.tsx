@@ -191,9 +191,9 @@ export function Table({
             else{
                 const newFilters = filters.map((filter) => {
                                 if (filter.id.length > 0 && filter.value !== "") {
-                                    if(filter.id === "Search"){
+                                    if(filter.id === 'Search'){
                                         return {
-                                            id: "Search",
+                                            id: 'Search',
                                             value: filter.value
                                         };
                                     }
