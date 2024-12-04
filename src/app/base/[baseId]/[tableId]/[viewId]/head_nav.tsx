@@ -879,6 +879,7 @@ export function HeadNav({
                     }}
                     className="h-[18px] w-full text-xs font-semibold text-black outline-none"
                     placeholder="Find in view"
+                    defaultValue={searchKey}
                   ></input>
                 </div>
                 <div

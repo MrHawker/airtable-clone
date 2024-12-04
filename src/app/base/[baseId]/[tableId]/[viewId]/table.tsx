@@ -90,6 +90,7 @@ export function Table({
             setTrueFilters(newFilter)
         }else{
             const newFilter = filters.filter((fil)=>fil.id !== "Search")
+            setFilters(newFilter)
             setTrueFilters(newFilter)
         }
        
