@@ -271,8 +271,6 @@ export const tableRouter = createTRPCRouter({
           numId: 'asc',
         },
       });
-      
-      
 
       const processedData = applyFilter(
         fullData.map((dat) => ({

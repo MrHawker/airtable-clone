@@ -87,11 +87,10 @@ export function Table({
                 id: 'Search',
                 value: searchKey
             }]
-            setTrueFilters(newFilter)
-        }else{
-            const newFilter = filters.filter((fil)=>fil.id !== "Search")
             setFilters(newFilter)
-            setTrueFilters(newFilter)
+        }else{
+            const newFilter = filters.filter((fil)=>fil.id !== 'Search')
+            setFilters(newFilter)
         }
        
     },[searchKey])
@@ -192,7 +191,13 @@ export function Table({
             else{
                 const newFilters = filters.map((filter) => {
                                 if (filter.id.length > 0 && filter.value !== "") {
-                                    if(filter.value !== "Empty" && filter.value !== "Not Empty"){
+                                    if(filter.id === "Search"){
+                                        return {
+                                            id: "Search",
+                                            value: filter.value
+                                        };
+                                    }
+                                    if(filter.value !== "Empty" && filter.value !== "Not Empty" ){
                                         const temp = String(filter.value).split("_")
                                         if(temp.length < 2 || temp[1] === undefined || temp[1] === "") return undefined;
                                     }
