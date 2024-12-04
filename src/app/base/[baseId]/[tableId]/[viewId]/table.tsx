@@ -71,7 +71,7 @@ export function Table({
 
     const { data: rows_data, isLoading: isRowLoading,fetchNextPage,isFetching } = api.table.getRows.useInfiniteQuery(    
         { 
-            tableId: params.tableId,sorts:trueSorts,filters:trueFilters,
+            tableId:params.tableId,sorts:trueSorts,filters:trueFilters,
             limit:100
         },
             {
@@ -81,7 +81,19 @@ export function Table({
                 staleTime:0
             }
         );
-    
+    useEffect(()=>{
+        if(searchKey !== ""){
+            const newFilter = [...filters,{
+                id: 'Search',
+                value: searchKey
+            }]
+            setTrueFilters(newFilter)
+        }else{
+            const newFilter = filters.filter((fil)=>fil.id === "Search")
+            setTrueFilters(newFilter)
+        }
+       
+    },[searchKey])
     useEffect(() => {
         const content = view?.filterBy.map((filter, index) => ({
             id: filter,
@@ -309,6 +321,7 @@ export function Table({
                     type: (col as AdvColumnDef).type,
                 }
             }))
+
             const newFilters = [...filters]
 
             const index = newFilters.findIndex((col)=>col.id === oldName)
@@ -417,36 +430,6 @@ export function Table({
             debouncedServerUpdate(rowId, updatedRow);
         }
     };
-
-    /*Remove this later when done with backend filtering */
-    // useEffect(() => {
-    //     const tableDataMap = new Map(
-    //         tableData.map(row => [(row as TableRow)?.rowId, row])
-    //     );
-    //     const mergedData = flatData.map(row => {
-    //         const existingRow = tableDataMap.get((row as TableRow)?.rowId);
-    //         return existingRow ?? row;
-    //     });
-    //     if (searchKey.length === 0) {
-    //         setTableData(mergedData);
-    //         return;
-    //     }
-    //     setTableData(
-    //         mergedData.filter((row) => {
-    //             if(row == undefined) return false
-    //             for (const col of columns) {
-    //                 if(String(col.header) === "rowId"){
-    //                     continue
-    //                 }
-    //                 const cellValue = row[String(col.header) as keyof object];
-    //                 if (cellValue && String(cellValue).toLowerCase().includes(searchKey.toLowerCase())) {
-    //                     return true; 
-    //                 }
-    //             }
-    //             return false; 
-    //         })
-    //     );
-    // }, [searchKey,flatData]);
     
     const table = useReactTable({
         data: tableData,
@@ -580,7 +563,6 @@ export function Table({
                                 )
                             })}
                             <th 
-                                
                                 onClick={(e)=>{e.stopPropagation();setheaderCIndex(-1);seteditHIndex(-1);setAddColumnButton(true)}} 
                                 className="w-[94px] bg-header-background p-2 text-xs font-medium text-center border-slate-300 border border-t-0 hover:bg-table-background transition-colors duration-75 cursor-pointer group"
                             >

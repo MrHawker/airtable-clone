@@ -49,8 +49,8 @@ model View {
     tableId      String
     sortBy       String[]   
     sortOrder    String[]   
-    filterBy     String[]
-    filterVal    String[]
+    filterBy     String[] 
+    filterVal    String[] 
 
     @@index([tableId])
 }

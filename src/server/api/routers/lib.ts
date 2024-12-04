@@ -15,11 +15,26 @@ interface RowData {
     
 }
 
-export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSchema[]): JsonValue[] => {
+export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSchema[],columns_id:string[]): JsonValue[] => {
     return data
+        // .filter((row) =>{
+
+        // })
         .filter((row) => {
             for (const filter of filters) {
+                
                 if (row.values == null) return false;
+                let flag = false
+
+                if(filter.id === 'Search'){
+                    console.log(columns_id)
+                    for (const id of columns_id){
+                        if(String(row.values[id as keyof object]).includes(String(filter.value))){
+                            flag = true
+                        }
+                    }
+                }
+                if(!flag) return false;
 
                 const temp = String(filter.value).split("_")
                 const filterKey = temp[0]
@@ -39,7 +54,6 @@ export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSc
                 if (filterVal === undefined || filterVal === ""){
                     return true;
                 }
-
                 if(filterKey === "Contain") {
                     if(!val.toLowerCase().includes(filterVal.toLowerCase())){
                         return false
@@ -71,8 +85,7 @@ export const applyFilter = (data: RowData[],filters: filterSchema[],sorts:sortSc
                         return false
                     }
                 }else if(filterKey === "Less Than"){
-                    console.log(val)
-                    console.log(parseFloat(filterVal))
+                    
                     if(!(parseFloat(val) < parseFloat(filterVal))){
                         return false
                     }

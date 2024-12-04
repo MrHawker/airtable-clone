@@ -24,6 +24,9 @@ export  function Entry({session}:{session:Session}) {
     const [viewList,setViewList] = useState<string[]>([]);
     const [searchKey,setSearchKey] = useState("")
     const [isLoading,setIsLoading] = useState(false)
+    const [filterbutton, setFilterButton] = useState(false);
+    const [sortbutton, setSortButton] = useState(false);
+
     useEffect(()=>{
         if (isViewsLoading) return;
         const content = views?.map((view)=>{
@@ -32,11 +35,11 @@ export  function Entry({session}:{session:Session}) {
         setViewList(content ?? [])
     },[views])
 
-    
-
     return (
-        <main className="relative" onClick={()=>{setOpen(false)}}>
+        <main className="relative" onClick={()=>{setOpen(false);setSortButton(false);setFilterButton(false)}}>
             <HeadNav 
+            sortbutton={sortbutton} setSortButton={setSortButton}
+            filterbutton={filterbutton} setFilterButton={setFilterButton}
             openView={openView} setOpenView={setOpenView}
             open={open} setOpen={setOpen} 
             filters={filters} setFilters={setFilters} 

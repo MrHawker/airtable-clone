@@ -254,9 +254,14 @@ export const tableRouter = createTRPCRouter({
       sorts:z.array(sortSchema),
       limit: z.number().min(1).max(500).default(50),
       cursor: z.number().nullish(),
-      
     }))
     .query(async ({ ctx, input }) => {
+      const tab = await ctx.db.table.findFirst({
+        where: {
+          id: input.tableId,
+        },
+
+      });
       const fullData = await ctx.db.data.findMany({
         where: {
           tableId: input.tableId,
@@ -266,16 +271,19 @@ export const tableRouter = createTRPCRouter({
           numId: 'asc',
         },
       });
-  
+      
+      
+
       const processedData = applyFilter(
         fullData.map((dat) => ({
           id: dat.id,
           values: dat.values,
         })),
         input.filters,
-        input.sorts
+        input.sorts,
+        tab?.columns_id ?? []
+        
       );
-      
       
       const rows = processedData.slice(
         input.cursor ? input.cursor : 0,
