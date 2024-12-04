@@ -83,11 +83,11 @@ export function Table({
         );
     useEffect(()=>{
         if(searchKey !== ""){
-            const newFilter = [...filters,{
+            const newFilter = [...trueFilters,{
                 id: 'Search',
                 value: searchKey
             }]
-            setFilters(newFilter)
+            setTrueFilters(newFilter)
         }else{
             const newFilter = filters.filter((fil)=>fil.id !== 'Search')
             setFilters(newFilter)
@@ -189,11 +189,12 @@ export function Table({
             }
             
             else{
-                const newFilters = filters.map((filter) => {
+                let newFilters = []
+                const temp = filters.map((filter) => {
                                 if (filter.id.length > 0 && filter.value !== "") {
-                                    if(filter.id === 'Search'){
+                                    if(filter.id === "Search"){
                                         return {
-                                            id: 'Search',
+                                            id: "Search",
                                             value: filter.value
                                         };
                                     }
@@ -211,7 +212,14 @@ export function Table({
                                 return undefined;
                             })
                             .filter((filter) => filter !== undefined)
-                
+                if(searchKey == ""){
+                    newFilters =[...temp]
+                }else{
+                    newFilters = [...temp,{
+                        id:"Search",
+                        value:searchKey
+                    }]
+                }
                 let equal = false
                 if(newFilters !== undefined){
                     if(newFilters.length === trueFilters.length){
@@ -221,7 +229,6 @@ export function Table({
                         }  
                         );
                     }
-                    
                 }
                 
                 if (!equal) {

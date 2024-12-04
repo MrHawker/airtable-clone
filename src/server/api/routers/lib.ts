@@ -22,87 +22,82 @@ export const applyFilter = (
 ): JsonValue[] => {
   return data
     .filter((row) => {
-      
       if (row.values == null) return false;
-      
       for (const filter of filters) {
-        if (filter.id === 'Search') {
+        if (filter.id === "Search") {
           let flag = false;
-          
+
           for (const id of columns_id) {
-            console.log(String(row.values[id as keyof object]))
             if (
               String(row.values[id as keyof object])
                 .toLowerCase()
                 .includes(String(filter.value).toLowerCase())
             ) {
-              console.log("-----------")
-              console.log(row)
-              console.log("-----------")
               flag = true;
             }
           }
-          if (!flag) return false;
-        } else {
-          const temp = String(filter.value).split("_");
-          const filterKey = temp[0];
-          const filterVal = temp[1];
-          const val = String(row.values[filter.id as keyof object]);
 
-          if (filterKey === "Empty") {
-            
-            if (!(val === "undefined" || val === "")) {
-              return false;
-            }
-          } else if (filterKey === "Not Empty") {
-            if (val === "undefined" || val === "") {
-              return false;
-            }
+          if (!flag) return false
+        }
+      }
+      for (const filter of filters) {
+        if(filter.id === "Search") continue;
+        const temp = String(filter.value).split("_");
+        const filterKey = temp[0];
+        const filterVal = temp[1];
+        const val = String(row.values[filter.id as keyof object]);
+
+        if (filterKey === "Empty") {
+          if (!(val === "undefined" || val === "")) {
+            return false;
           }
-          if (filterVal === undefined || filterVal === "") {
-            return true;
+        } else if (filterKey === "Not Empty") {
+          if (val === "undefined" || val === "") {
+            return false;
           }
-          if (filterKey === "Contain") {
-            if (!val.toLowerCase().includes(filterVal.toLowerCase())) {
-              return false;
-            }
-          } else if (filterKey === "Not Contain") {
-            if (val.toLowerCase().includes(filterVal.toLowerCase())) {
-              return false;
-            }
-          } else if (filterKey === "Is") {
-            if (!(val === filterVal)) {
-              return false;
-            }
-          } else if (filterKey === "Is Not") {
-            if (val === filterVal) {
-              return false;
-            }
-          } else if (filterKey === "Equal") {
-            if (!(val === filterVal)) {
-              return false;
-            }
-          } else if (filterKey === "Not Equal") {
-            if (val === filterVal) {
-              return false;
-            }
-          } else if (filterKey === "Greater Than") {
-            
-            if (!(parseFloat(val) > parseFloat(filterVal))) {
-              return false;
-            }
-          } else if (filterKey === "Less Than") {
-            if (!(parseFloat(val) < parseFloat(filterVal))) {
-              return false;
-            }
-          } else if (filterKey === "Less Than Or Equal") {
-            if (!(parseFloat(val) <= parseFloat(filterVal))) {
-              return false;
-            }
-          } else if (filterKey === "Greater Than Or Equal") {
-            if (!(parseFloat(val) >= parseFloat(filterVal))) {
-              return false;
-            }
+        }
+        if (filterVal === undefined || filterVal === "") {
+          return true;
+        }
+        if (filterKey === "Contain") {
+          if (!val.toLowerCase().includes(filterVal.toLowerCase())) {
+            return false;
+          }
+        } else if (filterKey === "Not Contain") {
+          if (val.toLowerCase().includes(filterVal.toLowerCase())) {
+            return false;
+          }
+        } else if (filterKey === "Is") {
+          if (!(val === filterVal)) {
+            return false;
+          }
+        } else if (filterKey === "Is Not") {
+          if (val === filterVal) {
+            return false;
+          }
+        } else if (filterKey === "Equal") {
+          if (!(val === filterVal)) {
+            return false;
+          }
+        } else if (filterKey === "Not Equal") {
+          if (val === filterVal) {
+            return false;
+          }
+        } else if (filterKey === "Greater Than") {
+          if (!(parseFloat(val) > parseFloat(filterVal))) {
+            return false;
+          }
+        } else if (filterKey === "Less Than") {
+          if (!(parseFloat(val) < parseFloat(filterVal))) {
+            return false;
+          }
+        } else if (filterKey === "Less Than Or Equal") {
+          if (!(parseFloat(val) <= parseFloat(filterVal))) {
+            return false;
+          }
+        } else if (filterKey === "Greater Than Or Equal") {
+          if (!(parseFloat(val) >= parseFloat(filterVal))) {
+            return false;
           }
         }
       }
