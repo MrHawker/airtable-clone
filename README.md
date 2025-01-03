@@ -6,3 +6,5 @@ This is a clone of the airtable web app.
 
 - Next.js
 - Tailwind CSS
+- Prisma
+- NextAuth
