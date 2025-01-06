@@ -8,4 +8,3 @@ This is a clone of the airtable web app.
 - Tailwind CSS
 - Prisma
 - NextAuth
-- Postgres
