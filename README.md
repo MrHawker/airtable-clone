@@ -9,3 +9,4 @@ This is a clone of the airtable web app.
 - Prisma
 - NextAuth
 - PostgreSQL
+asdasda
